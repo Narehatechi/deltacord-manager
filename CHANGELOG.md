@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.4.0...v1.5.0) (2026-10-22)
+
+
+### Features
+
+* DC app icon in Determination Mono ([8a5c1b3](https://github.com/Narehatechi/deltacord-manager/commit/8a5c1b3a57d985cdc6d9c00d16965deaaaaa8bb8))
+
 # [1.4.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.3.1...v1.4.0) (2026-10-22)
 
 
