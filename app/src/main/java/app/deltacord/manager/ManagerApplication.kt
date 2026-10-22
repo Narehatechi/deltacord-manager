@@ -22,6 +22,9 @@ class ManagerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // The crash screen runs in its own ":crash" process; don't set up the app there.
+        if (Application.getProcessName().endsWith(":crash")) return
+        CrashActivity.install(this)
         initNotificationChannels()
 
         startKoin {
