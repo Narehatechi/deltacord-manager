@@ -16,12 +16,14 @@ class CommitsPagingSource(
         }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Commit> {
-        val page = params.key ?: 0
+        // GitHub pages start at 1, and page=0 returns the same commits as page=1.
+        // Starting at 0 loaded the first page twice and crashed the list on duplicate keys.
+        val page = params.key ?: 1
 
         return when (val response = repo.getCommits(BuildConfig.REPO, page)) {
             is ApiResponse.Success -> LoadResult.Page(
                 data = response.data,
-                prevKey = if (page > 0) page - 1 else null,
+                prevKey = if (page > 1) page - 1 else null,
                 nextKey = if (response.data.isNotEmpty()) page + 1 else null
             )
 
