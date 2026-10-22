@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import app.deltacord.manager.R
 
-/** "Determination Mono" by Abacadaba, CC BY-NC-ND. See app/src/main/res/font/README. */
+/** "Determination Mono" by Abacadaba, CC BY-NC-ND. See app/src/main/FONT-LICENSE.txt. */
 val Determination = FontFamily(Font(R.font.determination))
 
 private fun TextStyle.determination() = copy(fontFamily = Determination)
