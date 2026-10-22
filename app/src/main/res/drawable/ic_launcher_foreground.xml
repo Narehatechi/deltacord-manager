@@ -1,7 +1,6 @@
-<!-- Undercord: orange chat bubble with a heart cut out. Original artwork. -->
+<!-- Intentionally blank for now; the launcher shows the plain black background. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <path android:fillColor="#FFFF7F27" android:fillType="evenOdd"
-        android:pathData="M40,32 H68 Q78,32 78,42 V60 Q78,70 68,70 H47 L35,79.5 L37,69 Q30,66.5 30,60 V42 Q30,32 40,32 Z M54,62 C54,62 42.5,55 42.5,47.5 C42.5,43.8 45.3,41 48.7,41 C51,41 53,42.4 54,44.4 C55,42.4 57,41 59.3,41 C62.7,41 65.5,43.8 65.5,47.5 C65.5,55 54,62 54,62 Z"/>
+    <path android:fillColor="#00000000" android:pathData="M0,0h1v1h-1z"/>
 </vector>
