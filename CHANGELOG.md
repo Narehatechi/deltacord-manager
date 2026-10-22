@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Narehatechi/undercord-manager/compare/v1.0.0...v1.0.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* use a plain black app icon for now ([4223585](https://github.com/Narehatechi/undercord-manager/commit/4223585ef205d1166db4bd8d2387a6e183f8017b))
+
 # 1.0.0 (2026-10-22)
 
 
