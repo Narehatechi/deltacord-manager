@@ -1,3 +1,17 @@
+# [1.3.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.2.0...v1.3.0) (2026-10-22)
+
+
+### Bug Fixes
+
+* move font credit out of res/font so the build passes ([7bb3a3e](https://github.com/Narehatechi/deltacord-manager/commit/7bb3a3e93c3ebb6f63886438bcf437f2920c5f6e))
+
+
+### Features
+
+* add the Determination Mono font file ([bae033d](https://github.com/Narehatechi/deltacord-manager/commit/bae033dc62931787a4923b9409da82cf9bb2878a))
+* show a crash report screen instead of silently closing ([e89ee7e](https://github.com/Narehatechi/deltacord-manager/commit/e89ee7e8585787875a0037cf3fbb082ace4a783b))
+* use the Determination font across the installer ([7d857ca](https://github.com/Narehatechi/deltacord-manager/commit/7d857ca8865d4a817347a3f095a195d3a00dd059))
+
 # [1.2.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.1.0...v1.2.0) (2026-10-22)
 
 
