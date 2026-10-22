@@ -28,6 +28,12 @@ class PreferenceManager(context: Context) :
 
     var patchIcon by booleanPreference("patch_icon", true)
 
+    /** Background color of the patched app icon, as a hex string like #000000. */
+    var iconColor by stringPreference("icon_color", "#000000")
+
+    /** Image picked by the user for the patched app icon. Used when the file exists. */
+    val customIconFile: File = context.filesDir.resolve("custom_icon.png")
+
     var debuggable by booleanPreference("debuggable", false)
 
     var mirror by enumPreference("mirror", Mirror.DEFAULT)

@@ -130,6 +130,15 @@
     <string name="settings_app_name">App name</string>
     <string name="settings_app_icon">Replace app icon</string>
     <string name="settings_app_icon_description">Uses the Deltacord icon instead of Discord\'s</string>
+    <string name="settings_icon_color">Icon background color</string>
+    <string name="settings_icon_color_hint">Hex color, e.g. #000000</string>
+    <string name="settings_icon_color_invalid">Not a valid color</string>
+    <string name="settings_custom_icon">Custom icon image</string>
+    <string name="settings_custom_icon_none">Using Discord\'s logo. Pick an image to use your own.</string>
+    <string name="settings_custom_icon_set">Using your image. Reinstall to apply.</string>
+    <string name="settings_custom_icon_pick">Choose image</string>
+    <string name="settings_custom_icon_reset">Use Discord\'s logo</string>
+    <string name="settings_custom_icon_failed">Couldn\'t read that image</string>
 
     <string name="settings_advanced">Advanced</string>
     <string name="settings_advanced_description">Modify downloading and installation</string>

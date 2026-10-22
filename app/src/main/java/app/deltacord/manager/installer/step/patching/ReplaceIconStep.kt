@@ -12,6 +12,10 @@ import app.deltacord.manager.installer.step.StepRunner
 import app.deltacord.manager.installer.step.download.DownloadBaseStep
 import app.deltacord.manager.installer.utils.ArscUtil
 import app.deltacord.manager.installer.utils.ArscUtil.addColorResource
+import app.deltacord.manager.installer.utils.ArscUtil.addResource
+import app.deltacord.manager.utils.CustomIcon
+import com.google.devrel.gmscore.tools.apk.arsc.BinaryResourceIdentifier
+import com.google.devrel.gmscore.tools.apk.arsc.BinaryResourceValue
 import app.deltacord.manager.installer.utils.ArscUtil.getMainArscChunk
 import app.deltacord.manager.installer.utils.ArscUtil.getPackageChunk
 import app.deltacord.manager.installer.utils.ArscUtil.getResourceFileName
@@ -20,7 +24,8 @@ import app.deltacord.manager.utils.DiscordVersion
 import org.koin.core.component.inject
 
 /**
- * Replaces the existing app icons with Deltacord tinted ones
+ * Replaces the app icon background with the chosen color and, if the user picked
+ * an image in Customization settings, replaces the foreground (Discord's logo) with it.
  */
 class ReplaceIconStep : Step() {
 
@@ -43,7 +48,22 @@ class ReplaceIconStep : Step() {
 
         runner.logger.i("Patching icon assets (squareIcon=$squareIconFile, roundIcon=$roundIconFile)")
 
-        val backgroundColor = arsc.getPackageChunk().addColorResource("brand", Color(BuildConfig.MODDED_APP_ICON))
+        val colorArgb = CustomIcon.parseColor(preferences.iconColor) ?: BuildConfig.MODDED_APP_ICON
+        val backgroundColor = arsc.getPackageChunk().addColorResource("brand", Color(colorArgb))
+
+        val customIcon = preferences.customIconFile.takeIf { it.exists() }
+        var foregroundIcon: BinaryResourceIdentifier? = null
+        if (customIcon != null) {
+            runner.logger.i("Adding custom icon foreground ($CUSTOM_ICON_PATH)")
+            val pathIdx = arsc.getMainArscChunk().stringPool.addString(CUSTOM_ICON_PATH)
+            foregroundIcon = arsc.getPackageChunk().addResource(
+                typeName = "mipmap",
+                resourceName = "deltacord_custom_icon",
+                configurations = { it.toString().endsWith("dpi") }, // every density bucket except anydpi-v26
+                valueType = BinaryResourceValue.Type.STRING,
+                valueData = pathIdx,
+            )
+        }
 
         val postfix = when (preferences.channel) {
             DiscordVersion.Type.BETA -> "beta"
@@ -63,14 +83,19 @@ class ReplaceIconStep : Step() {
                 resourcePath = rscFile,
                 referencePath = referencePath,
                 backgroundColor = backgroundColor,
+                foregroundIcon = foregroundIcon,
             )
         }
 
         runner.logger.i("Writing and compiling resources.arsc")
         ZipWriter(baseApk, /* append = */ true).use {
+            if (customIcon != null) it.writeEntry(CUSTOM_ICON_PATH, customIcon.readBytes())
             it.deleteEntry("resources.arsc")
             it.writeEntry("resources.arsc", arsc.toByteArray())
         }
     }
 
+    private companion object {
+        const val CUSTOM_ICON_PATH = "res/deltacord_custom_icon.png"
+    }
 }
