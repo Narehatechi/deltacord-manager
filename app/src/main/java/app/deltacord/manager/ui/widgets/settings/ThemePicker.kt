@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import app.deltacord.manager.R
 import app.deltacord.manager.domain.manager.PreferenceManager
 import app.deltacord.manager.domain.manager.Theme
+import app.deltacord.manager.ui.theme.DeltaruneColors
 import app.deltacord.manager.utils.contentDescription
 import app.deltacord.manager.utils.thenIf
 import kotlinx.coroutines.launch
@@ -74,6 +75,7 @@ fun ThemePicker(
                     0 -> systemTheme to Theme.SYSTEM
                     1 -> lightScheme to Theme.LIGHT
                     2 -> darkScheme to Theme.DARK
+                    3 -> DeltaruneColors to Theme.DELTARUNE
                     else -> systemTheme to Theme.SYSTEM
                 }
 
@@ -123,7 +125,7 @@ fun ThemePicker(
                 }
             }
 
-            if (pagerState.currentPage < 2) { // Not last page
+            if (pagerState.currentPage < Theme.entries.size - 1) { // Not last page
                 IconButton(
                     onClick = {
                         scope.launch {
@@ -169,6 +171,14 @@ fun ThemePicker(
                 theme = Theme.DARK,
                 colors = darkScheme,
                 page = 2,
+                pagerState = pagerState,
+                prefs = prefs
+            )
+
+            ThemePickerOption(
+                theme = Theme.DELTARUNE,
+                colors = DeltaruneColors,
+                page = 3,
                 pagerState = pagerState,
                 prefs = prefs
             )

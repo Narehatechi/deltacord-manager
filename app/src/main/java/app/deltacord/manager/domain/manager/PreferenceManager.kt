@@ -44,7 +44,7 @@ class PreferenceManager(context: Context) :
 
     var autoClearCache by booleanPreference("auto_clear_cache", true)
 
-    var theme by enumPreference("theme", Theme.SYSTEM)
+    var theme by enumPreference("theme", Theme.DELTARUNE)
 
     var channel by enumPreference("channel", DiscordVersion.Type.STABLE)
 
@@ -72,7 +72,8 @@ class PreferenceManager(context: Context) :
 enum class Theme(@StringRes val labelRes: Int) {
     SYSTEM(R.string.theme_system),
     LIGHT(R.string.theme_light),
-    DARK(R.string.theme_dark)
+    DARK(R.string.theme_dark),
+    DELTARUNE(R.string.theme_deltarune)
 }
 
 enum class UpdateCheckerDuration(@StringRes val labelRes: Int, val time: Long, val unit: TimeUnit) {
