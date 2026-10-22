@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.3.0...v1.3.1) (2026-10-22)
+
+
+### Bug Fixes
+
+* commit list crashed on launch from loading GitHub's first page twice ([a9b0b3c](https://github.com/Narehatechi/deltacord-manager/commit/a9b0b3ca97269e05e8bc3569ddc04c4410d6ff88))
+
 # [1.3.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.2.0...v1.3.0) (2026-10-22)
 
 
