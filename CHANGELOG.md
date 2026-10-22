@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.1.0...v1.2.0) (2026-10-22)
+
+
+### Features
+
+* let users pick a custom app icon image and background color ([0f58be8](https://github.com/Narehatechi/deltacord-manager/commit/0f58be8f9d09d71afeed2a5ab161dd0386cd29c9))
+
 # [1.1.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.0.1...v1.1.0) (2026-10-22)
 
 
