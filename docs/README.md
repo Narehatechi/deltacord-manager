@@ -1,6 +1,6 @@
-# 💊 Undercord Manager
+# 💊 Deltacord Manager
 
-This documentation explains how to use [Undercord Manager](https://github.com/Narehatechi/undercord-manager).
+This documentation explains how to use [Deltacord Manager](https://github.com/Narehatechi/deltacord-manager).
 
 ## 📖 Table of contents
 
@@ -8,6 +8,6 @@ TODO.
 
 ## ⏭️ Start here
 
-The next page will tell you about the prerequisites for using Undercord Manager.
+The next page will tell you about the prerequisites for using Deltacord Manager.
 
 Continue: [💼 Prerequisites](0_prerequisites.md)

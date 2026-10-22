@@ -10,23 +10,23 @@ plugins {
 }
 
 android {
-    namespace = "app.undercord.manager"
+    namespace = "app.deltacord.manager"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "app.undercord.manager"
+        applicationId = "app.deltacord.manager"
         minSdk = 28
         targetSdk = 34
         versionName = version.toString()
         versionCode = versionName!!.removePrefix("v").split("-").first().replace(".", "").toInt()
 
 
-        buildConfigField("String", "MOD_NAME", "\"Undercord\"")
-        buildConfigField("String", "MANAGER_NAME", "\"UndercordManager\"")
-        buildConfigField("String", "REPO", "\"Narehatechi/undercord-bundle\"")
+        buildConfigField("String", "MOD_NAME", "\"Deltacord\"")
+        buildConfigField("String", "MANAGER_NAME", "\"DeltacordManager\"")
+        buildConfigField("String", "REPO", "\"Narehatechi/deltacord-bundle\"")
         buildConfigField("String", "ORG_LINK", "\"https://github.com/Narehatechi\"")
         buildConfigField("String", "INVITE_LINK", "\"https://github.com/Narehatechi\"")
-        buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"app.undercord\"")
+        buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"app.deltacord\"")
         buildConfigField("int", "MODDED_APP_ICON", "0xFF000000")
         buildConfigField("int", "MODDED_APP_ICON_ALPHA", "0xFFFBB33C")
         buildConfigField("int", "MODDED_APP_ICON_OTHER", "0xFFD3575E")

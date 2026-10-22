@@ -33,48 +33,48 @@
    </a>
 </p>
 
-# 💊 Undercord Manager
+# 💊 Deltacord Manager
 
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/Narehatechi/undercord-manager/release.yml)
+![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/Narehatechi/deltacord-manager/release.yml)
 ![Open Software License 3](https://img.shields.io/badge/License-OSL%20v3-yellow.svg)
 
-Application to use Undercord on Android.
+Application to use Deltacord on Android.
 
 ## ❓ About
 
-Undercord Manager is an application that installs and updates [Undercord](https://github.com/Narehatechi/undercord-bundle),
+Deltacord Manager is an application that installs and updates [Deltacord](https://github.com/Narehatechi/deltacord-bundle),
 a modification for Discord.
 
 ## 💪 Features
 
-Some of the features Undercord Manager provides are:
+Some of the features Deltacord Manager provides are:
 
-- 📲 **Install**: Download Discord and install Undercord on it
-- 🔁 **Update**: Update Undercord to the latest version
-- 🔔 **Notifications**: Be notified when a new version of Undercord is available
-- 📃 **Changelog**: See the changelog of Undercord
+- 📲 **Install**: Download Discord and install Deltacord on it
+- 🔁 **Update**: Update Deltacord to the latest version
+- 🔔 **Notifications**: Be notified when a new version of Deltacord is available
+- 📃 **Changelog**: See the changelog of Deltacord
 
 ## 🔽 Download
 
-You can download the most recent version of Undercord Manager from
-[here](https://github.com/Narehatechi/undercord-manager/releases/latest).  
-Learn how to use Undercord Manager by following the [documentation](/docs).
+You can download the most recent version of Deltacord Manager from
+[here](https://github.com/Narehatechi/deltacord-manager/releases/latest).  
+Learn how to use Deltacord Manager by following the [documentation](/docs).
 
 ## 📚 Everything else
 
 ### 📙 Contributing
 
-Thank you for considering contributing to Undercord Manager.
+Thank you for considering contributing to Deltacord Manager.
 You can find the contribution guidelines [here](CONTRIBUTING.md).
 
 ### 🛠️ Building
 
-To build a Undercord Manager, you can follow the [documentation](/docs).
+To build a Deltacord Manager, you can follow the [documentation](/docs).
 
 ### 📃 Documentation
 
-You can find the documentation of Undercord Manager [here](/docs).
+You can find the documentation of Deltacord Manager [here](/docs).
 
 ## 📜 Licence
 
-Undercord Manager is licensed under the OSLv3 license. Please see the [license file](LICENSE) for more information.
+Deltacord Manager is licensed under the OSLv3 license. Please see the [license file](LICENSE) for more information.

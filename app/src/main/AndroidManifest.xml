@@ -51,7 +51,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="app.undercord.actions.INSTALL"/>
+                <action android:name="app.deltacord.actions.INSTALL"/>
                 <category android:name="android.intent.category.OPENABLE"/>
             </intent-filter>
         </activity>

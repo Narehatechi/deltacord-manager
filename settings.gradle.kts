@@ -1,4 +1,4 @@
-rootProject.name = "undercord-manager"
+rootProject.name = "deltacord-manager"
 
 pluginManagement {
     repositories {
