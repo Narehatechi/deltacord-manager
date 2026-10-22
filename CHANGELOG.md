@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.0.1...v1.1.0) (2026-10-22)
+
+
+### Features
+
+* rename Undercord to Deltacord ([657e9df](https://github.com/Narehatechi/deltacord-manager/commit/657e9df9836737827614a042f08a219f4fcdedd1))
+
 ## [1.0.1](https://github.com/Narehatechi/undercord-manager/compare/v1.0.0...v1.0.1) (2026-10-22)
 
 
