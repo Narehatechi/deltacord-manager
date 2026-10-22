@@ -1,5 +1,6 @@
 package app.deltacord.manager.ui.widgets.libraries
 
+import app.deltacord.manager.ui.theme.Determination
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -61,7 +62,7 @@ fun LicenseBottomSheet(
                 Text(
                     text = license.licenseContent!!,
                     style = MaterialTheme.typography.bodySmall,
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = Determination,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
