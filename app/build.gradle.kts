@@ -27,7 +27,7 @@ android {
         buildConfigField("String", "ORG_LINK", "\"https://github.com/Narehatechi\"")
         buildConfigField("String", "INVITE_LINK", "\"https://github.com/Narehatechi\"")
         buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"app.undercord\"")
-        buildConfigField("int", "MODDED_APP_ICON", "0xFEB23A42")
+        buildConfigField("int", "MODDED_APP_ICON", "0xFF000000")
         buildConfigField("int", "MODDED_APP_ICON_ALPHA", "0xFFFBB33C")
         buildConfigField("int", "MODDED_APP_ICON_OTHER", "0xFFD3575E")
 
