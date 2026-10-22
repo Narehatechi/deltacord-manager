@@ -7,6 +7,11 @@ on:
             - main
             - dev
 
+# Only one release at a time; two runs racing for the same version make both fail.
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
 jobs:
     release:
         name: Release
