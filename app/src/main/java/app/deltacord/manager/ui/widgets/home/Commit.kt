@@ -1,5 +1,6 @@
 package app.deltacord.manager.ui.widgets.home
 
+import app.deltacord.manager.ui.theme.Determination
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -69,7 +70,7 @@ fun Commit(
                 text = commit.sha.substring(0, 7),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
-                fontFamily = FontFamily.Monospace
+                fontFamily = Determination
             )
 
             Text(

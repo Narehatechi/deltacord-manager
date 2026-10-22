@@ -1,5 +1,6 @@
 package app.deltacord.manager.ui.widgets.installer
 
+import app.deltacord.manager.ui.theme.Determination
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -80,7 +81,7 @@ fun LogLine(
             text = "[${log.level.name[0]}]  ",
             color = levelColor.copy(alpha = 0.5f),
             fontSize = 11.sp,
-            fontFamily = FontFamily.Monospace
+            fontFamily = Determination
         )
 
         Column(
@@ -90,7 +91,7 @@ fun LogLine(
                 text = log.message.padEnd(logPadding),
                 softWrap = wrapText,
                 fontSize = 13.sp,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = Determination,
                 color = LocalContentColor.current.copy(alpha = if (log.level == LogEntry.Level.DEBUG) 0.5f else 0.85f)
             )
 
@@ -99,7 +100,7 @@ fun LogLine(
                     text = log.formatTimestamp(),
                     softWrap = false,
                     fontSize = 11.sp,
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = Determination,
                     color = LocalContentColor.current.copy(alpha = 0.5f)
                 )
             }
