@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.3.1...v1.4.0) (2026-10-22)
+
+
+### Features
+
+* Deltarune theme for the installer, now the default ([992f0e5](https://github.com/Narehatechi/deltacord-manager/commit/992f0e513302358c4e4457a055c90c176b9db1ea))
+
 ## [1.3.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.3.0...v1.3.1) (2026-10-22)
 
 
