@@ -234,7 +234,7 @@ class HomeScreen : Screen {
 
         IconButton(onClick = {
             viewModel.getDiscordVersions()
-            viewModel.commitsRefreshCount++
+            viewModel.refreshCommits()
         }) {
             Icon(
                 imageVector = Icons.Filled.Refresh,

@@ -53,10 +53,15 @@ class HomeViewModel(
         private set
 
     var release by mutableStateOf<Release?>(null)
+        private set
 
     /** Bumped by the refresh button so the change list reloads too, not only Discord's version. */
     var commitsRefreshCount by mutableStateOf(0)
         private set
+
+    fun refreshCommits() {
+        commitsRefreshCount++
+    }
 
     private var updateDownloadUrl by mutableStateOf<String?>(null)
     var showUpdateDialog by mutableStateOf(false)
