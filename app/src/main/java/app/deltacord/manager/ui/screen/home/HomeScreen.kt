@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -207,9 +208,11 @@ class HomeScreen : Screen {
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
-                    CommitList(
-                        commits = viewModel.commits.collectAsLazyPagingItems()
-                    )
+                    val commits = viewModel.commits.collectAsLazyPagingItems()
+                    LaunchedEffect(viewModel.commitsRefreshCount) {
+                        if (viewModel.commitsRefreshCount > 0) commits.refresh()
+                    }
+                    CommitList(commits = commits)
                 }
             }
         }
@@ -229,7 +232,10 @@ class HomeScreen : Screen {
         val viewModel: HomeViewModel = getScreenModel()
         val navigator = LocalNavigator.currentOrThrow
 
-        IconButton(onClick = { viewModel.getDiscordVersions() }) {
+        IconButton(onClick = {
+            viewModel.getDiscordVersions()
+            viewModel.commitsRefreshCount++
+        }) {
             Icon(
                 imageVector = Icons.Filled.Refresh,
                 contentDescription = stringResource(R.string.action_reload)
