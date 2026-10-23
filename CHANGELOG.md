@@ -1,3 +1,16 @@
+# [1.6.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.5.0...v1.6.0) (2026-10-23)
+
+
+### Bug Fixes
+
+* keep release's private setter; refresh the change list through a function ([f312fe2](https://github.com/Narehatechi/deltacord-manager/commit/f312fe2c2b2df54ca9c612faae52313dfae36c19))
+* refresh button also reloads the change list ([5a64a53](https://github.com/Narehatechi/deltacord-manager/commit/5a64a53ae168626ab96671ba00c34242788a4c31))
+
+
+### Features
+
+* Deltarune installer theme uses white instead of yellow ([0268d4e](https://github.com/Narehatechi/deltacord-manager/commit/0268d4e31ba71d31006c6f638188d0219348282b))
+
 # [1.5.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.4.0...v1.5.0) (2026-10-22)
 
 
