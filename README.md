@@ -79,4 +79,4 @@ You can find the documentation of Deltacord Manager [here](/docs).
 
 Deltacord Manager is licensed under the OSLv3 license. Please see the [license file](LICENSE) for more information.
 
-
+fix: sign releases with the Deltacord key, it should work this time 
