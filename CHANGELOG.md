@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/Narehatechi/deltacord-manager/compare/v1.6.1...v1.6.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* downloads from GitHub work again ([d6fe6f3](https://github.com/Narehatechi/deltacord-manager/commit/d6fe6f39afd6cb7c4b812fc4764dac6295fd75d1))
+
 ## [1.6.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.6.0...v1.6.1) (2026-10-23)
 
 
