@@ -3,7 +3,7 @@ package app.deltacord.manager.di
 import app.deltacord.manager.network.service.HttpService
 import app.deltacord.manager.network.service.RestService
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -18,7 +18,9 @@ val httpModule = module {
         isLenient = true
     }
 
-    fun provideHttpClient(json: Json) = HttpClient(CIO) {
+    // Android's own HTTP stack: Ktor's CIO engine rejects header lines over 8192 characters, and
+    // github.com's download redirects now carry a ~9200 character Content-Security-Policy.
+    fun provideHttpClient(json: Json) = HttpClient(Android) {
         install(ContentNegotiation) {
             json(json)
         }
