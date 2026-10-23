@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.6.0...v1.6.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* sign releases with the Deltacord key ([4851c48](https://github.com/Narehatechi/deltacord-manager/commit/4851c48c649f3590126bb64943a5b791ae02a023))
+
 # [1.6.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.5.0...v1.6.0) (2026-10-23)
 
 
