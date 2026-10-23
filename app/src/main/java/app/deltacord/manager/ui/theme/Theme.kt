@@ -18,19 +18,18 @@ import app.deltacord.manager.domain.manager.Theme
 import org.koin.androidx.compose.get
 
 // Deltarune-style palette: pitch-black dark world, white text and box borders,
-// yellow for whatever is selected, orange menu buttons, red for danger.
+// white for whatever is selected, orange menu buttons, red for danger.
 private val Black = Color(0xFF000000)
 private val White = Color(0xFFFFFFFF)
-private val Yellow = Color(0xFFFFFF00)
 private val Orange = Color(0xFFFF7F27)
 private val Red = Color(0xFFFF0000)
 private val Cyan = Color(0xFF00C8FF)
 
 val DeltaruneColors = darkColorScheme(
-    primary = Yellow,
+    primary = White,
     onPrimary = Black,
-    primaryContainer = Color(0xFF2E2A00),
-    onPrimaryContainer = Yellow,
+    primaryContainer = Color(0xFF2A2A2A),
+    onPrimaryContainer = White,
     inversePrimary = Orange,
     secondary = Orange,
     onSecondary = Black,
