@@ -71,11 +71,17 @@ class ReplaceIconStep : Step() {
             else -> null
         }
         
-        for (rscFile in setOf(squareIconFile, roundIconFile)) { // setOf to not possibly patch same file twice
-            val referencePath = if (postfix == null) rscFile else {
-                rscFile.replace("_$postfix.xml", ".xml")
-            }
+        val apkEntries = ZipFile(baseApk).use { zip -> zip.entries().asSequence().map { it.name }.toSet() }
 
+        // setOf to not possibly patch same file twice
+        for (rscFile in setOf(squareIconFile, roundIconFile)) { 
+            // Discord recently enabled resource shrinking, which strips the other channels' icons,
+            // so some icons may not exist
+            val referencePath = postfix
+                ?.let { rscFile.replace("_$it.xml", ".xml") }
+                ?.takeIf { it in apkEntries }
+                ?: rscFile
+        
             runner.logger.i("Patching adaptive icon ($rscFile <- $referencePath)")
 
             AxmlUtil.patchAdaptiveIcon(
