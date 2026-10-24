@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.6.2...v1.7.0) (2026-10-24)
+
+
+### Features
+
+* replace Android's launch screen with black ([eb30243](https://github.com/Narehatechi/deltacord-manager/commit/eb302434a7b952e2b6d9d1ac05e7ea3b2408ea49))
+
 ## [1.6.2](https://github.com/Narehatechi/deltacord-manager/compare/v1.6.1...v1.6.2) (2026-10-23)
 
 
