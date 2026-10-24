@@ -19,6 +19,7 @@ import app.deltacord.manager.installer.step.patching.AddModStep
 import app.deltacord.manager.installer.step.patching.PatchManifestsStep
 import app.deltacord.manager.installer.step.patching.PresignApksStep
 import app.deltacord.manager.installer.step.patching.ReplaceIconStep
+import app.deltacord.manager.installer.step.patching.ReplaceSplashStep
 import app.deltacord.manager.installer.util.LogEntry
 import app.deltacord.manager.installer.util.Logger
 import app.deltacord.manager.utils.DiscordVersion
@@ -124,6 +125,7 @@ class StepRunner(
 
         // Patching
         if (preferenceManager.patchIcon) add(ReplaceIconStep())
+        add(ReplaceSplashStep())
         add(PatchManifestsStep())
         add(PresignApksStep(signedDir))
         add(AddModStep(signedDir, lspatchedDir))

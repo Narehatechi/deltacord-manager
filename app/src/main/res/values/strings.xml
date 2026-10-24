@@ -35,6 +35,7 @@
     <string name="step_dl_mod">Downloading Deltacord</string>
 
     <string name="step_change_icon">Changing app icon</string>
+    <string name="step_replace_splash">Replacing launch screen</string>
     <string name="step_patch_manifests">Patching app manifests</string>
     <string name="step_add_mod">Injecting Deltacord</string>
 
