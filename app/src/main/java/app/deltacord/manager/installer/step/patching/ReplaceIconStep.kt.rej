@@ -1,0 +1,12 @@
+diff a/app/src/main/java/app/deltacord/manager/installer/step/patching/ReplaceIconStep.kt b/app/src/main/java/app/deltacord/manager/installer/step/patching/ReplaceIconStep.kt	(rejected hunks)
+@@ -17,7 +17,10 @@ import app.deltacord.manager.installer.utils.ArscUtil.getPackageChunk
+ import app.deltacord.manager.installer.utils.ArscUtil.getResourceFileName
+ import app.deltacord.manager.installer.utils.AxmlUtil
+ import app.deltacord.manager.utils.DiscordVersion
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.withContext
+ import org.koin.core.component.inject
++import java.util.zip.ZipFile
+ 
+ /**
+  * Replaces the existing app icons with Deltacord tinted ones
