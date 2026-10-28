@@ -11,12 +11,6 @@
     >
   </picture>
   <br>
-  <a href="https://Narehatechi.github.io/">
-       <picture>
-           <source height="32px" media="(prefers-color-scheme: dark)" srcset="assets/logo/logo-dark.svg" />
-           <img height="32px" src="assets/logo/logo-light.svg" />
-       </picture>
-   </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
    <a href="https://github.com/Narehatechi">
        <picture>
            <source height="32px" media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/13122796/178032563-d4e084b7-244e-4358-af50-26bde6dd4996.png" />
@@ -57,7 +51,8 @@ Some of the features Deltacord Manager provides are:
 ##  Download
 
 You can download the most recent version of Deltacord Manager from
-[here](https://github.com/Narehatechi/deltacord-manager/releases/latest).  
+[here](https://github.com/Narehatechi/deltacord-manager/releases/latest). Step-by-step install instructions are in
+[Deltacord's README](https://github.com/Narehatechi/deltacord-bundle#%EF%B8%8F-install).  
 Learn how to use Deltacord Manager by following the [documentation](/docs).
 
 ##  Everything else
