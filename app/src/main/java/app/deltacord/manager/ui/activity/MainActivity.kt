@@ -10,11 +10,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import app.deltacord.manager.ui.screen.home.HomeScreen
 import app.deltacord.manager.ui.screen.installer.InstallerScreen
-import app.deltacord.manager.ui.theme.DeltacordManagerTheme
+import app.deltacord.manager.domain.manager.InstallManager
+import app.deltacord.manager.domain.manager.PreferenceManager
+import app.deltacord.manager.ui.delta.DeltaTheme
+import app.deltacord.manager.ui.screen.setup.SetupScreen
+import org.koin.android.ext.android.get
 import app.deltacord.manager.utils.DiscordVersion
 import app.deltacord.manager.utils.Intents
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.transitions.SlideTransition
+import cafe.adriel.voyager.transitions.FadeTransition
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,16 +35,19 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        val screen = if (intent.action == Intents.Actions.INSTALL && version != null) {
-            InstallerScreen(DiscordVersion.fromVersionCode(version)!!)
-        } else {
-            HomeScreen()
+        val prefs: PreferenceManager = get()
+        val screen = when {
+            intent.action == Intents.Actions.INSTALL && version != null ->
+                InstallerScreen(DiscordVersion.fromVersionCode(version)!!)
+            // The first time (and nothing installed yet): the guided setup.
+            !prefs.setupDone && get<InstallManager>().current == null -> SetupScreen()
+            else -> HomeScreen()
         }
 
         setContent {
-            DeltacordManagerTheme {
+            DeltaTheme(sounds = { prefs.sounds }) {
                 Navigator(screen) {
-                    SlideTransition(it)
+                    FadeTransition(it)
                 }
             }
         }

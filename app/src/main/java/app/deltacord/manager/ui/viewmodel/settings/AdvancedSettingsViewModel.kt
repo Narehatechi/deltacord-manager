@@ -22,8 +22,7 @@ class AdvancedSettingsViewModel(
     private val context: Context,
     private val prefs: PreferenceManager,
 ) : ScreenModel {
-    private val cacheDir = context.externalCacheDir ?: File(Environment.getExternalStorageDirectory(), Environment.DIRECTORY_DOWNLOADS).resolve(
-        BuildConfig.MANAGER_NAME).also { it.mkdirs() }
+    private val cacheDir = (context.externalCacheDir ?: context.cacheDir)
 
     fun clearCache() {
         cacheDir.deleteRecursively()

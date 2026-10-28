@@ -44,10 +44,7 @@ class HomeViewModel(
     private val downloadManager: DownloadManager
 ) : ScreenModel {
 
-    private val cacheDir = context.externalCacheDir ?: File(
-        Environment.getExternalStorageDirectory(),
-        Environment.DIRECTORY_DOWNLOADS
-    ).resolve(BuildConfig.MANAGER_NAME).also { it.mkdirs() }
+    private val cacheDir = (context.externalCacheDir ?: context.cacheDir)
 
     var discordVersions by mutableStateOf<Map<DiscordVersion.Type, DiscordVersion?>?>(null)
         private set

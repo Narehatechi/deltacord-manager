@@ -15,8 +15,7 @@ class PreferenceManager(context: Context) :
     BasePreferenceManager(context.getSharedPreferences("prefs", Context.MODE_PRIVATE)) {
 
     val DEFAULT_MODULE_LOCATION =
-        (context.externalCacheDir ?: File(Environment.getExternalStorageDirectory(), Environment.DIRECTORY_DOWNLOADS).resolve(
-            BuildConfig.MANAGER_NAME).also { it.mkdirs() }).resolve("xposed.apk")
+        ((context.externalCacheDir ?: context.cacheDir)).resolve("xposed.apk")
 
     var packageName by stringPreference("package_name", BuildConfig.MODDED_APP_PACKAGE_NAME)
 
@@ -61,6 +60,12 @@ class PreferenceManager(context: Context) :
     var allowDowngrade by booleanPreference("allow_downgrade", false)
 
     var hasAskedForBatteryOpt by booleanPreference("has_asked_for_battery_opt", false)
+
+    /** The guided first setup has been seen (or skipped). */
+    var setupDone by booleanPreference("setup_done", false)
+
+    /** Text blips and menu sounds. */
+    var sounds by booleanPreference("sounds", true)
 
     init {
         if (mirror !in Mirror.entries) {

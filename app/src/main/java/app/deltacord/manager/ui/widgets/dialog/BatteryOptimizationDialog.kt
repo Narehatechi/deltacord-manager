@@ -1,5 +1,7 @@
 package app.deltacord.manager.ui.widgets.dialog
 
+import app.deltacord.manager.ui.delta.DeltaDialog
+
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -39,34 +41,20 @@ fun BatteryOptimizationDialog() {
     }
 
     if (showDialog) {
-        val onDismiss = {
-            prefs.hasAskedForBatteryOpt = true
-            showDialog = false
-        }
-
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(stringResource(R.string.battery_opt_title)) },
-            text = { Text(stringResource(R.string.battery_opt_description)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDialog = false
-                        requestIgnoreBatteryOptimizations(context)
-                    }
-                ) {
-                    Text(stringResource(R.string.battery_opt_confirm))
-                }
+        DeltaDialog(
+            lines = listOf(
+                "Let the Manager keep going in the background?",
+                "Then downloads don't stop when the screen turns off.",
+            ),
+            options = listOf(
+                "ALLOW" to { requestIgnoreBatteryOptimizations(context) },
+                "NOT NOW" to {},
+            ),
+            onDismiss = {
+                prefs.hasAskedForBatteryOpt = true
+                showDialog = false
             },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.battery_opt_dismiss))
-                }
-            },
-            properties = DialogProperties(
-                dismissOnBackPress = false,
-                dismissOnClickOutside = false
-            )
+            dismissible = false,
         )
     }
 }

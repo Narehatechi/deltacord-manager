@@ -76,6 +76,9 @@
 
         <receiver android:name=".updatechecker.reciever.UpdateBroadcastReceiver" android:exported="false"/>
 
+        <!-- Deltacord's answers, through the reply token only it gets (see DeltacordLink). -->
+        <receiver android:name=".domain.link.LinkReceiver" android:exported="false"/>
+
         <provider
                 android:name="rikka.shizuku.ShizukuProvider"
                 android:authorities="${applicationId}.shizuku"

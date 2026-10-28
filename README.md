@@ -41,12 +41,14 @@ a modification for Discord.
 
 ##  Features
 
-Some of the features Deltacord Manager provides are:
+Deltacord Manager looks and sounds like Deltarune: black screens, white pixel boxes, the Determination font, the red SOUL as your cursor, and dialogue that types itself out.
 
--  **Install**: Download Discord and install Deltacord on it
--  **Update**: Update Deltacord to the latest version
--  **Notifications**: Be notified when a new version of Deltacord is available
--  **Changelog**: See the changelog of Deltacord
+-  **Guided setup**: the first time, it walks you through installing, one question at a time
+-  **Install & update**: download Discord and add Deltacord to it; update when Discord does
+-  **Deltacord's health**: see what's working and what isn't, straight from Deltacord
+-  **Plugins & themes**: turn Deltacord's plugins on and off and pick its theme from the Manager
+-  **Backups**: back up Deltacord's plugins, settings, themes and logs in one tap
+-  **No scary permissions**: everything it downloads stays in its own folders
 
 ##  Download
 

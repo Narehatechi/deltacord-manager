@@ -1,57 +1,43 @@
 package app.deltacord.manager.ui.screen.installer
 
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import app.deltacord.manager.BuildConfig
+import app.deltacord.manager.R
+import app.deltacord.manager.domain.manager.PreferenceManager
+import app.deltacord.manager.installer.util.LogEntry
+import app.deltacord.manager.ui.delta.DeltaScreen
+import app.deltacord.manager.ui.delta.DeltaType
+import app.deltacord.manager.ui.delta.MenuOption
+import app.deltacord.manager.ui.delta.ToggleOption
+import app.deltacord.manager.ui.viewmodel.installer.LogViewerViewModel
+import app.deltacord.manager.ui.widgets.installer.LogLine
+import app.deltacord.manager.utils.rememberFileSaveLauncher
+import app.deltacord.manager.utils.thenIf
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import app.deltacord.manager.R
-import app.deltacord.manager.domain.manager.PreferenceManager
-import app.deltacord.manager.installer.util.LogEntry
-import app.deltacord.manager.ui.viewmodel.installer.LogViewerViewModel
-import app.deltacord.manager.ui.widgets.installer.LogLine
-import app.deltacord.manager.utils.DimenUtils
-import app.deltacord.manager.utils.rememberFileSaveLauncher
-import app.deltacord.manager.utils.thenIf
 import org.koin.androidx.compose.get
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** The install log, line by line. Tap a line for its time; long-press to copy it. */
 class LogViewerScreen(
     val logs: List<LogEntry>
 ) : Screen {
@@ -59,21 +45,28 @@ class LogViewerScreen(
     @Composable
     override fun Content() {
         val prefs: PreferenceManager = get()
-        val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        val navigator = LocalNavigator.currentOrThrow
+        val context = LocalContext.current
         val viewModel: LogViewerViewModel = getScreenModel {
             parametersOf(logs)
         }
+        val saveFile = rememberFileSaveLauncher(content = viewModel.logsString)
 
-        Scaffold(
-            topBar = { Toolbar(scrollBehavior, viewModel) },
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-        ) { pv ->
+        DeltaScreen(title = "Log", onBack = { navigator.pop() }, scroll = false) {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                MenuOption(
+                    "SAVE",
+                    { saveFile.launch("${BuildConfig.MOD_NAME}-Manager-${System.currentTimeMillis()}.log") },
+                    style = DeltaType.body,
+                    modifier = Modifier.weight(1f),
+                )
+                MenuOption("SHARE", { viewModel.shareLogs(context) }, style = DeltaType.body, modifier = Modifier.weight(1f))
+                MenuOption("COPY", { viewModel.copyLogs() }, style = DeltaType.body, modifier = Modifier.weight(1f))
+            }
+            ToggleOption("Wrap long lines", prefs.logsLineWrap, { prefs.logsLineWrap = it })
             LazyColumn(
-                contentPadding = PaddingValues(bottom = DimenUtils.navBarPadding),
                 modifier = Modifier
-                    .padding(pv)
+                    .fillMaxSize()
                     .thenIf(!prefs.logsLineWrap) {
                         horizontalScroll(rememberScrollState())
                     }
@@ -90,106 +83,4 @@ class LogViewerScreen(
             }
         }
     }
-
-    @Composable
-    private fun Toolbar(
-        scrollBehavior: TopAppBarScrollBehavior,
-        viewModel: LogViewerViewModel
-    ) {
-        val navigator = LocalNavigator.currentOrThrow
-        val context = LocalContext.current
-        val saveFile = rememberFileSaveLauncher(content = viewModel.logsString)
-
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_logs)) },
-            navigationIcon = {
-                IconButton(onClick = { navigator.pop() }) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.action_back)
-                    )
-                }
-            },
-            actions = {
-                var showDropdown by remember {
-                    mutableStateOf(false)
-                }
-
-                IconButton(onClick = { saveFile.launch("${BuildConfig.MOD_NAME}-Manager-${System.currentTimeMillis()}.log") }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Save,
-                        contentDescription = stringResource(R.string.action_save_logs)
-                    )
-                }
-
-                IconButton(onClick = { viewModel.shareLogs(context) }) {
-                    Icon(
-                        imageVector = Icons.Filled.Share,
-                        contentDescription = stringResource(R.string.action_share_logs)
-                    )
-                }
-
-                IconButton(onClick = { showDropdown = true }) {
-                    Icon(
-                        imageVector = Icons.Outlined.MoreVert,
-                        contentDescription = stringResource(R.string.action_more_options)
-                    )
-                }
-
-                Dropdown(
-                    viewModel,
-                    expanded = showDropdown,
-                    onDismiss = { showDropdown = false }
-                )
-            },
-            scrollBehavior = scrollBehavior
-        )
-    }
-
-    @Composable
-    fun Dropdown(
-        viewModel: LogViewerViewModel,
-        expanded: Boolean,
-        onDismiss: () -> Unit
-    ) {
-        val prefs: PreferenceManager = get()
-
-        Box {
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = onDismiss,
-                offset = DpOffset(
-                    10.dp, 26.dp
-                )
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.settings_logs_line_wrap)) },
-                    onClick = { prefs.logsLineWrap = !prefs.logsLineWrap },
-                    trailingIcon = {
-                        Checkbox(
-                            checked = prefs.logsLineWrap,
-                            onCheckedChange = { prefs.logsLineWrap = it }
-                        )
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.settings_logs_alternate_lines)) },
-                    onClick = { prefs.logsAlternateBackground = !prefs.logsAlternateBackground },
-                    trailingIcon = {
-                        Checkbox(
-                            checked = prefs.logsAlternateBackground,
-                            onCheckedChange = { prefs.logsAlternateBackground = it }
-                        )
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.action_copy_logs)) },
-                    onClick = { viewModel.copyLogs() }
-                )
-            }
-        }
-    }
-
 }

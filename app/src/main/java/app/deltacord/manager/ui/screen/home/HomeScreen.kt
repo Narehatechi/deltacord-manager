@@ -1,66 +1,71 @@
 package app.deltacord.manager.ui.screen.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.collectAsLazyPagingItems
 import app.deltacord.manager.BuildConfig
-import app.deltacord.manager.R
 import app.deltacord.manager.domain.manager.PreferenceManager
-import app.deltacord.manager.ui.components.SegmentedButton
+import app.deltacord.manager.ui.delta.Delta
+import app.deltacord.manager.ui.delta.DeltaDialog
+import app.deltacord.manager.ui.delta.DeltaScreen
+import app.deltacord.manager.ui.delta.DeltaType
+import app.deltacord.manager.ui.delta.HpBar
+import app.deltacord.manager.ui.delta.MenuOption
+import app.deltacord.manager.ui.delta.PixelBox
+import app.deltacord.manager.ui.delta.SoulHeart
+import app.deltacord.manager.ui.screen.about.AboutScreen
+import app.deltacord.manager.ui.screen.deltacord.DeltacordScreen
 import app.deltacord.manager.ui.screen.installer.InstallerScreen
 import app.deltacord.manager.ui.screen.settings.SettingsScreen
 import app.deltacord.manager.ui.viewmodel.home.HomeViewModel
-import app.deltacord.manager.ui.widgets.AppIcon
 import app.deltacord.manager.ui.widgets.dialog.BatteryOptimizationDialog
-import app.deltacord.manager.ui.widgets.dialog.StoragePermissionsDialog
-import app.deltacord.manager.ui.widgets.home.CommitList
-import app.deltacord.manager.ui.widgets.updater.UpdateDialog
-import app.deltacord.manager.utils.Constants
 import app.deltacord.manager.utils.DiscordVersion
-import app.deltacord.manager.utils.navigate
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.androidx.compose.get
 
-class HomeScreen : Screen {
+/** Everything the main menu shows (kept apart from where it comes from, so it can be previewed). */
+data class HomeState(
+    val appName: String,
+    val installed: String?,
+    val latest: String?,
+    val targetPinned: Boolean,
+    val action: HomeAction,
+    val managerUpdate: String?,
+    val updating: Boolean = false,
+    val updateProgress: Float? = null,
+)
+
+enum class HomeAction(val label: String, val enabled: Boolean) {
+    LOADING("LOADING...", false),
+    INSTALL("INSTALL", true),
+    UPDATE("UPDATE", true),
+    REINSTALL("REINSTALL", true),
+    DOWNGRADE("DOWNGRADE", true),
+    NO_DOWNGRADE("NEWER INSTALLED", false),
+}
+
+/** [autoInstall]: start installing as soon as Discord's newest version is known (from the setup). */
+class HomeScreen(private val autoInstall: Boolean = false) : Screen {
 
     @Composable
     override fun Content() {
@@ -68,185 +73,183 @@ class HomeScreen : Screen {
         val prefs: PreferenceManager = get()
         val viewModel: HomeViewModel = getScreenModel()
 
-        val currentVersion = remember {
+        val current = remember(viewModel.installManager.current) {
             DiscordVersion.fromVersionCode(viewModel.installManager.current?.versionCode.toString())
         }
-
-        val latestVersion =
-            remember(prefs.discordVersion, viewModel.discordVersions, prefs.channel) {
-                when {
-                    prefs.discordVersion.isBlank() -> viewModel.discordVersions?.get(prefs.channel)
-                    else -> DiscordVersion.fromVersionCode(prefs.discordVersion)
-                }
+        val latest = remember(prefs.discordVersion, viewModel.discordVersions, prefs.channel) {
+            when {
+                prefs.discordVersion.isBlank() -> viewModel.discordVersions?.get(prefs.channel)
+                else -> DiscordVersion.fromVersionCode(prefs.discordVersion)
             }
+        }
+        val action = when {
+            latest == null -> HomeAction.LOADING
+            current == null -> HomeAction.INSTALL
+            current == latest -> HomeAction.REINSTALL
+            latest > current -> HomeAction.UPDATE
+            prefs.allowDowngrade -> HomeAction.DOWNGRADE
+            else -> HomeAction.NO_DOWNGRADE
+        }
+        var progress by remember { mutableStateOf<Float?>(null) }
+        var autoStarted by rememberSaveable { mutableStateOf(false) }
+        LaunchedEffect(latest) {
+            if (autoInstall && !autoStarted && latest != null && current == null) {
+                autoStarted = true
+                navigator.push(InstallerScreen(latest))
+            }
+        }
+        val state = HomeState(
+            appName = prefs.appName,
+            installed = current?.toString(),
+            latest = latest?.toString(),
+            targetPinned = prefs.discordVersion.isNotBlank(),
+            action = action,
+            managerUpdate = viewModel.release?.versionName?.takeIf { viewModel.showUpdateDialog && !BuildConfig.DEBUG },
+            updating = viewModel.isUpdating,
+            updateProgress = progress,
+        )
 
-        // == Dialogs == //
-
-        StoragePermissionsDialog()
         BatteryOptimizationDialog()
 
-        if (
-            viewModel.showUpdateDialog &&
-            viewModel.release != null &&
-            !BuildConfig.DEBUG
-        ) {
-            var progress by remember { mutableStateOf<Float?>(null) }
-
-            UpdateDialog(
-                release = viewModel.release!!,
-                isUpdating = viewModel.isUpdating,
-                progress = progress,
-                onDismiss = { viewModel.showUpdateDialog = false },
-                onConfirm = {
-                    viewModel.downloadAndInstallUpdate { newProgress -> progress = newProgress }
-                }
-            )
-        }
-
-        // == Screen == //
-
-        Scaffold(
-            topBar = { TitleBar() },
-        ) { pv ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .padding(pv)
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                AppIcon(
-                    customIcon = prefs.patchIcon,
-                    releaseChannel = prefs.channel,
-                    modifier = Modifier.size(60.dp)
-                )
-
-                Text(
-                    text = prefs.appName,
-                    style = MaterialTheme.typography.titleLarge
-                )
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AnimatedVisibility(visible = currentVersion != null) {
-                        Text(
-                            text = stringResource(
-                                R.string.version_current,
-                                currentVersion.toString()
-                            ),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = LocalContentColor.current.copy(alpha = 0.5f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    val latestLabel =
-                        if (prefs.discordVersion.isNotBlank()) R.string.version_target else R.string.version_latest
-
-                    AnimatedVisibility(visible = latestVersion != null) {
-                        Text(
-                            text = stringResource(latestLabel, latestVersion.toString()),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = LocalContentColor.current.copy(alpha = 0.5f),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        navigator.navigate(InstallerScreen(latestVersion!!))
-                    },
-                    enabled = latestVersion != null && (prefs.allowDowngrade || latestVersion >= (currentVersion ?: Constants.DUMMY_VERSION)),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    val label = when {
-                        latestVersion == null -> R.string.msg_loading
-                        currentVersion == null -> R.string.action_install
-                        currentVersion == latestVersion -> R.string.action_reinstall
-                        latestVersion > currentVersion -> R.string.action_update
-                        else -> if (prefs.allowDowngrade) R.string.msg_downgrade else R.string.msg_downgrade_disallowed
-                    }
-
-                    Text(
-                        text = stringResource(label),
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        modifier = Modifier
-                            .basicMarquee()
-                            .fillMaxWidth()
-                    )
-                }
-
-                AnimatedVisibility(visible = viewModel.installManager.current != null) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp),
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
-                    ) {
-                        SegmentedButton(
-                            icon = Icons.Filled.OpenInNew,
-                            text = stringResource(R.string.action_launch),
-                            onClick = { viewModel.launchMod() }
-                        )
-                        SegmentedButton(
-                            icon = Icons.Filled.Info,
-                            text = stringResource(R.string.action_info),
-                            onClick = { viewModel.launchModInfo() }
-                        )
-                        SegmentedButton(
-                            icon = Icons.Filled.Delete,
-                            text = stringResource(R.string.action_uninstall),
-                            onClick = { viewModel.uninstallMod() }
-                        )
-                    }
-                }
-
-                ElevatedCard(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    val commits = viewModel.commits.collectAsLazyPagingItems()
-                    LaunchedEffect(viewModel.commitsRefreshCount) {
-                        if (viewModel.commitsRefreshCount > 0) commits.refresh()
-                    }
-                    CommitList(commits = commits)
-                }
-            }
-        }
+        MainMenu(
+            state = state,
+            onInstall = { latest?.let { navigator.push(InstallerScreen(it)) } },
+            onLaunch = viewModel::launchMod,
+            onAppInfo = viewModel::launchModInfo,
+            onUninstall = viewModel::uninstallMod,
+            onDeltacord = { navigator.push(DeltacordScreen()) },
+            onChanges = { navigator.push(ChangesScreen()) },
+            onConfig = { navigator.push(SettingsScreen()) },
+            onAbout = { navigator.push(AboutScreen()) },
+            onRefresh = { viewModel.getDiscordVersions(); viewModel.refreshCommits() },
+            onUpdateManager = { viewModel.downloadAndInstallUpdate { progress = it } },
+        )
     }
+}
 
-    @Composable
-    @OptIn(ExperimentalMaterial3Api::class)
-    private fun TitleBar() {
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_home)) },
-            actions = { Actions() }
+/** The main menu, like the game's title screen: the logo, the save file, and what to do. */
+@Composable
+fun MainMenu(
+    state: HomeState,
+    onInstall: () -> Unit,
+    onLaunch: () -> Unit,
+    onAppInfo: () -> Unit,
+    onUninstall: () -> Unit,
+    onDeltacord: () -> Unit,
+    onChanges: () -> Unit,
+    onConfig: () -> Unit,
+    onAbout: () -> Unit,
+    onRefresh: () -> Unit,
+    onUpdateManager: () -> Unit,
+) {
+    var options by remember { mutableStateOf(false) }
+    var confirmUninstall by remember { mutableStateOf(false) }
+    val installed = state.installed != null
+
+    if (options) {
+        DeltaDialog(
+            lines = listOf("What will you do with ${state.appName}?"),
+            options = listOf(
+                "APP INFO" to onAppInfo,
+                "UNINSTALL" to { confirmUninstall = true },
+                "NEVERMIND" to {},
+            ),
+            onDismiss = { options = false },
+        )
+    }
+    if (confirmUninstall) {
+        DeltaDialog(
+            lines = listOf(
+                "This removes ${state.appName} from your phone.",
+                "Your normal Discord app isn't touched.",
+            ),
+            options = listOf("UNINSTALL" to onUninstall, "KEEP IT" to {}),
+            onDismiss = { confirmUninstall = false },
         )
     }
 
-    @Composable
-    private fun Actions() {
-        val viewModel: HomeViewModel = getScreenModel()
-        val navigator = LocalNavigator.currentOrThrow
+    DeltaScreen(title = null, onBack = null) {
+        Spacer(Modifier.height(36.dp))
+        Text(
+            "DELTACORD",
+            style = DeltaType.logo,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Text(
+            "MANAGER  v${BuildConfig.VERSION_NAME}",
+            style = DeltaType.small.copy(letterSpacing = DeltaType.title.letterSpacing),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        )
+        Spacer(Modifier.height(28.dp))
 
-        IconButton(onClick = {
-            viewModel.getDiscordVersions()
-            viewModel.refreshCommits()
-        }) {
-            Icon(
-                imageVector = Icons.Filled.Refresh,
-                contentDescription = stringResource(R.string.action_reload)
-            )
+        SaveFile(state)
+
+        if (state.managerUpdate != null) {
+            Spacer(Modifier.height(16.dp))
+            PixelBox(borderColor = Delta.Yellow) {
+                Text("* A new Manager is here: ${state.managerUpdate}.", style = DeltaType.body)
+                if (state.updating) {
+                    Spacer(Modifier.height(10.dp))
+                    HpBar(state.updateProgress, label = "GET")
+                } else {
+                    MenuOption("UPDATE THE MANAGER", onUpdateManager, style = DeltaType.body)
+                }
+            }
         }
-        IconButton(onClick = { navigator.navigate(SettingsScreen()) }) {
-            Icon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = stringResource(R.string.action_open_about)
-            )
+
+        Spacer(Modifier.height(20.dp))
+        MenuOption(
+            text = state.action.label,
+            onClick = onInstall,
+            selected = state.action.enabled,
+            enabled = state.action.enabled,
+            sub = when (state.action) {
+                HomeAction.INSTALL -> "Download Discord and add Deltacord to it"
+                HomeAction.UPDATE -> "Discord ${state.latest} is out"
+                HomeAction.REINSTALL -> "Install the same version again"
+                HomeAction.DOWNGRADE -> "Go back to Discord ${state.latest}"
+                HomeAction.NO_DOWNGRADE -> "A newer Discord is installed (CONFIG to allow going back)"
+                HomeAction.LOADING -> "Checking Discord's versions..."
+            },
+        )
+        MenuOption("LAUNCH", onLaunch, enabled = installed)
+        MenuOption("DELTACORD", onDeltacord, enabled = installed, sub = "Health check, plugins, themes, backups")
+        MenuOption("CHANGES", onChanges, sub = "What's new in Deltacord")
+        MenuOption("CONFIG", onConfig)
+        if (installed) MenuOption("OPTIONS", { options = true }, sub = "App info, uninstall")
+        MenuOption("ABOUT", onAbout)
+        MenuOption("REFRESH", onRefresh, style = DeltaType.body, color = Delta.Gray)
+    }
+}
+
+/** The "save file": which Discord is installed and what's newest, like the game's file select. */
+@Composable
+private fun SaveFile(state: HomeState) {
+    PixelBox {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SoulHeart(pixel = 3.dp)
+            Spacer(Modifier.width(14.dp))
+            Column(Modifier.weight(1f)) {
+                Text(state.appName.uppercase(), style = DeltaType.title)
+                Text(
+                    when {
+                        state.installed == null -> "Not installed yet"
+                        state.latest == null -> "Discord ${state.installed}"
+                        state.installed == state.latest -> "Discord ${state.installed} · up to date"
+                        else -> "Discord ${state.installed}"
+                    },
+                    style = DeltaType.body.copy(color = if (state.installed == null) Delta.Gray else Delta.White),
+                )
+            }
+        }
+        if (state.latest != null && state.installed != state.latest) {
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Text(if (state.targetPinned) "TARGET" else "NEWEST", style = DeltaType.small)
+                Text("Discord ${state.latest}", style = DeltaType.small.copy(color = Delta.Yellow))
+            }
         }
     }
-
 }

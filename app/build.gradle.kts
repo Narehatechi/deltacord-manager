@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.paparazzi)
     publishing
 }
 
@@ -124,6 +125,7 @@ android {
 
 dependencies {
     implementation(platform(libs.compose.bom))
+    testImplementation(libs.junit)
 
     implementation(libs.bundles.accompanist)
     implementation(libs.bundles.androidx)

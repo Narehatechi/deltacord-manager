@@ -70,10 +70,7 @@ class StepRunner(
      * Root directory for all downloaded files
      */
     private val cacheDir =
-        context.externalCacheDir
-        ?: File(Environment.getExternalStorageDirectory(), Environment.DIRECTORY_DOWNLOADS)
-            .resolve(BuildConfig.MANAGER_NAME)
-            .also { it.mkdirs() }
+        (context.externalCacheDir ?: context.cacheDir)
 
     /**
      * Where version specific downloads are persisted

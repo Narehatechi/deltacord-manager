@@ -3,56 +3,69 @@ package app.deltacord.manager.ui.screen.installer
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Article
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.deltacord.manager.domain.manager.PreferenceManager
+import app.deltacord.manager.installer.step.StepStatus
+import app.deltacord.manager.ui.delta.Delta
+import app.deltacord.manager.ui.delta.DeltaDialog
+import app.deltacord.manager.ui.delta.DeltaScreen
+import app.deltacord.manager.ui.delta.DeltaType
+import app.deltacord.manager.ui.delta.Dialogue
+import app.deltacord.manager.ui.delta.HpBar
+import app.deltacord.manager.ui.delta.MenuOption
+import app.deltacord.manager.ui.delta.SectionLabel
+import app.deltacord.manager.ui.delta.SoulHeart
+import app.deltacord.manager.ui.viewmodel.installer.InstallerViewModel
+import app.deltacord.manager.utils.DiscordVersion
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import app.deltacord.manager.R
-import app.deltacord.manager.domain.manager.PreferenceManager
-import app.deltacord.manager.installer.step.StepStatus
-import app.deltacord.manager.ui.viewmodel.installer.InstallerViewModel
-import app.deltacord.manager.ui.widgets.dialog.BackWarningDialog
-import app.deltacord.manager.ui.widgets.dialog.DownloadFailedDialog
-import app.deltacord.manager.ui.widgets.installer.StepGroupCard
-import app.deltacord.manager.utils.DiscordVersion
-import okhttp3.internal.toImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import org.koin.androidx.compose.get
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
 
-class InstallerScreen(
-    val version: DiscordVersion
-) : Screen {
+/** One step as the installer screen shows it. */
+data class StepView(val name: String, val status: StepStatus, val progress: Float?, val durationMs: Int)
+
+/** Everything the installer screen shows. */
+data class InstallView(
+    val groups: List<Pair<String, List<StepView>>>,
+    val completed: Boolean,
+    val appName: String,
+) {
+    val steps get() = groups.flatMap { it.second }
+    val current get() = steps.firstOrNull { it.status == StepStatus.ONGOING }
+    val failed get() = steps.firstOrNull { it.status == StepStatus.UNSUCCESSFUL }
+    val success get() = completed && failed == null && steps.all { it.status == StepStatus.SUCCESSFUL }
+
+    /** Finished steps, plus how far the current one is. */
+    val progress: Float
+        get() {
+            if (steps.isEmpty()) return 0f
+            val done = steps.count { it.status == StepStatus.SUCCESSFUL }
+            return (done + (current?.progress ?: 0f)) / steps.size
+        }
+}
+
+class InstallerScreen(val version: DiscordVersion) : Screen {
 
     override val key: ScreenKey = "Installer-${UUID.randomUUID()}"
 
@@ -60,159 +73,143 @@ class InstallerScreen(
     override fun Content() {
         val nav = LocalNavigator.currentOrThrow
         val activity = LocalContext.current as? ComponentActivity
-        val viewModel: InstallerViewModel = getScreenModel {
-            parametersOf(version)
-        }
+        val prefs: PreferenceManager = get()
+        val viewModel: InstallerViewModel = getScreenModel { parametersOf(version) }
 
-        LaunchedEffect(viewModel.runner.currentStep) {
-            viewModel.expandGroup(viewModel.runner.currentStep?.group)
-        }
-
-        // Listen for error messages from InstallService
+        // Error messages from the install service.
         val intentListener: (Intent) -> Unit = remember {
             {
                 val msg = it.getStringExtra("deltacord.extras.EXTRA_MESSAGE")
                 if (msg?.isNotBlank() == true) viewModel.logError(msg)
             }
         }
-
         DisposableEffect(Unit) {
             activity?.addOnNewIntentListener(intentListener)
-            onDispose {
-                activity?.removeOnNewIntentListener(intentListener)
-            }
+            onDispose { activity?.removeOnNewIntentListener(intentListener) }
         }
 
-        BackHandler(
-            enabled = !viewModel.runner.completed
-        ) {
-            viewModel.openBackDialog()
-        }
+        val runner = viewModel.runner
+        BackHandler(enabled = !runner.completed) { viewModel.openBackDialog() }
 
-        if(viewModel.backDialogOpened) {
-            BackWarningDialog(
-                onExitClick = {
-                    viewModel.closeBackDialog()
-                    viewModel.cancelInstall()
-                    nav.pop()
-                },
-                onClose = { viewModel.closeBackDialog() }
+        if (viewModel.backDialogOpened) {
+            DeltaDialog(
+                lines = listOf("Leave now?", "Stopping halfway can leave broken downloads behind."),
+                options = listOf(
+                    "LEAVE" to { viewModel.cancelInstall(); nav.pop() },
+                    "STAY" to {},
+                ),
+                onDismiss = { viewModel.closeBackDialog() },
+            )
+        }
+        if (runner.downloadErrored) {
+            DeltaDialog(
+                lines = listOf("A download failed.", "Your connection may have dropped. Try again?"),
+                options = listOf(
+                    "TRY AGAIN" to { viewModel.cancelInstall(); nav.replace(InstallerScreen(version)) },
+                    "NOT NOW" to {},
+                ),
+                onDismiss = { viewModel.dismissDownloadFailedDialog() },
             )
         }
 
-        if(viewModel.runner.downloadErrored) {
-            DownloadFailedDialog(
-                onTryAgainClick = {
-                    viewModel.dismissDownloadFailedDialog()
-                    viewModel.cancelInstall()
-                    nav.replace(InstallerScreen(version))
-                },
-                onDismiss = {
-                    viewModel.dismissDownloadFailedDialog()
-                }
-            )
-        }
-
-        Scaffold(
-            topBar = {
-                TitleBar(
-                    viewModel = viewModel,
-                    onBackClick = {
-                        if(!viewModel.runner.completed)
-                            viewModel.openBackDialog()
-                        else
-                            nav.pop()
-                    }
-                )
-            }
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(it)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                for ((group, steps) in viewModel.groupedSteps) {
-                    key(group) {
-                        StepGroupCard(
-                            name = stringResource(group.nameRes),
-                            isCurrent = viewModel.expandedGroup == group,
-                            onClick = { viewModel.expandGroup(group) },
-                            steps = steps,
-                        )
-                    }
-                }
-
-                if (viewModel.runner.completed) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Show launch only if success
-                    val installSuccessful = viewModel.runner.currentStep?.status == StepStatus.SUCCESSFUL
-                    if (installSuccessful) {
-                        Button(
-                            onClick = { viewModel.launchMod() },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(stringResource(R.string.action_launch))
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        FilledTonalButton(
-                            onClick = { viewModel.shareLogs(activity!!) },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(stringResource(R.string.action_share_logs))
-                        }
-
-                        FilledTonalButton(
-                            onClick = { viewModel.clearCache() },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(stringResource(R.string.action_clear_cache))
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    @OptIn(ExperimentalMaterial3Api::class)
-    private fun TitleBar(
-        onBackClick: () -> Unit,
-        viewModel: InstallerViewModel
-    ) {
-        val prefs: PreferenceManager = get()
-        val nav = LocalNavigator.currentOrThrow
-
-        TopAppBar(
-            title = { Text(stringResource(R.string.title_installer)) },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.action_back)
-                    )
-                }
+        val view = InstallView(
+            groups = viewModel.groupedSteps.map { (group, steps) ->
+                stringResource(group.nameRes) to steps.map { StepView(stringResource(it.nameRes), it.status, it.progress, it.durationMs) }
             },
-            actions = {
-                if (prefs.isDeveloper && viewModel.runner.completed) {
-                    IconButton(onClick = { nav.push(LogViewerScreen(viewModel.runner.logger.logs.toImmutableList())) }) {
-                        Icon(
-                            imageVector = Icons.Outlined.Article,
-                            contentDescription = stringResource(R.string.action_view_logs)
-                        )
-                    }
-                }
-            }
+            completed = runner.completed,
+            appName = prefs.appName,
+        )
+
+        InstallerView(
+            view = view,
+            onBack = { if (!runner.completed) viewModel.openBackDialog() else nav.pop() },
+            onLaunch = viewModel::launchMod,
+            onShareLogs = { activity?.let(viewModel::shareLogs) },
+            onViewLogs = { nav.push(LogViewerScreen(runner.logger.logs.toImmutableList())) },
+            onClearCache = viewModel::clearCache,
+            onRetry = { nav.replace(InstallerScreen(version)) },
         )
     }
+}
 
+@Composable
+fun InstallerView(
+    view: InstallView,
+    onBack: () -> Unit,
+    onLaunch: () -> Unit,
+    onShareLogs: () -> Unit,
+    onViewLogs: () -> Unit,
+    onClearCache: () -> Unit,
+    onRetry: () -> Unit = {},
+) {
+    val lines = when {
+        view.success -> listOf("${view.appName} is installed.", "You're filled with DETERMINATION.")
+        view.failed != null -> listOf(
+            "Something went wrong: ${view.failed!!.name.lowercase()}.",
+            "Share the log so it can be fixed.",
+        )
+        view.completed -> listOf("The install stopped.")
+        else -> listOf((view.current?.name ?: "Getting ready") + "...")
+    }
+
+    DeltaScreen(title = "Install", onBack = onBack) {
+        Spacer(Modifier.height(8.dp))
+        Dialogue(lines)
+        Spacer(Modifier.height(16.dp))
+        HpBar(if (view.completed) (if (view.success) 1f else view.progress) else view.progress, label = "HP")
+
+        for ((group, steps) in view.groups) {
+            SectionLabel(group)
+            for (step in steps) StepLine(step)
+        }
+
+        if (view.completed) {
+            Spacer(Modifier.height(20.dp))
+            if (view.success) MenuOption("LAUNCH", onLaunch, selected = true)
+            else MenuOption("TRY AGAIN", onRetry, selected = true)
+            MenuOption("SHARE LOG", onShareLogs)
+            MenuOption("VIEW LOG", onViewLogs)
+            MenuOption("CLEAR CACHE", onClearCache, sub = "Download everything again next time")
+            MenuOption("BACK", onBack)
+        }
+    }
+}
+
+@Composable
+private fun StepLine(step: StepView) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+    ) {
+        Box(Modifier.width(34.dp)) {
+            when (step.status) {
+                StepStatus.ONGOING -> SoulHeart(pixel = 2.dp)
+                StepStatus.UNSUCCESSFUL -> SoulHeart(pixel = 2.dp, color = Delta.Gray)
+                else -> {}
+            }
+        }
+        Text(
+            step.name,
+            style = DeltaType.body.copy(
+                color = when (step.status) {
+                    StepStatus.ONGOING -> Delta.Yellow
+                    StepStatus.UNSUCCESSFUL -> Delta.Red
+                    StepStatus.SUCCESSFUL -> Delta.White
+                    StepStatus.QUEUED -> Delta.Gray
+                }
+            ),
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            when (step.status) {
+                StepStatus.QUEUED -> ""
+                StepStatus.ONGOING -> step.progress?.let { "${(it * 100).toInt()}%" } ?: "..."
+                StepStatus.SUCCESSFUL -> "%.1fs".format(step.durationMs / 1000f)
+                StepStatus.UNSUCCESSFUL -> "FAILED"
+            },
+            style = DeltaType.small.copy(color = if (step.status == StepStatus.UNSUCCESSFUL) Delta.Red else Delta.Gray),
+        )
+    }
 }
