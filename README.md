@@ -52,7 +52,7 @@ Some of the features Deltacord Manager provides are:
 
 You can download the most recent version of Deltacord Manager from
 [here](https://github.com/Narehatechi/deltacord-manager/releases/latest). Step-by-step install instructions are in
-[Deltacord's README](https://github.com/Narehatechi/deltacord-bundle#%EF%B8%8F-install).  
+[Deltacord's README](https://github.com/Narehatechi/deltacord-bundle#readme).  
 Learn how to use Deltacord Manager by following the [documentation](/docs).
 
 ##  Everything else
