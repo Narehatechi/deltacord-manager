@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.7.0...v1.8.0) (2026-10-28)
+
+
+### Features
+
+* Deltacord's own About page ([4b5c02c](https://github.com/Narehatechi/deltacord-manager/commit/4b5c02c9bead6ee41504e697a925724f6ef9648b))
+
 # [1.7.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.6.2...v1.7.0) (2026-10-24)
 
 
