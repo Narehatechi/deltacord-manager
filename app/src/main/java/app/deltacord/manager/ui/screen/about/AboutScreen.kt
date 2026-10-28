@@ -192,6 +192,21 @@ class AboutScreen : Screen {
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     ElevatedCard {
+                        // Deltacord is built on Revenge: its team, then those before them.
+                        listOf(
+                            Triple("Palm", "Lead developer of Revenge", "palmdevs"),
+                            Triple("oSumAtrIX", "Developer of Revenge", "osumatrix"),
+                            Triple("Nexpid", "Developer of Revenge", "nexpid"),
+                        ).forEach { (name, role, username) ->
+                            ListItem(
+                                text = name,
+                                subtext = role,
+                                imageUrl = "https://github.com/$username.png",
+                                onClick = {
+                                    uriHandler.openUri("https://github.com/$username")
+                                }
+                            )
+                        }
                         ListItem(
                             text = "Pylix",
                             subtext = "Past developer of Bunny",

@@ -25,7 +25,7 @@ android {
         buildConfigField("String", "MANAGER_NAME", "\"DeltacordManager\"")
         buildConfigField("String", "REPO", "\"Narehatechi/deltacord-bundle\"")
         buildConfigField("String", "ORG_LINK", "\"https://github.com/Narehatechi\"")
-        buildConfigField("String", "INVITE_LINK", "\"https://github.com/Narehatechi\"")
+        buildConfigField("String", "INVITE_LINK", "\"https://discord.gg/6zm6yY5RrE\"")
         buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"app.deltacord\"")
         buildConfigField("int", "MODDED_APP_ICON", "0xFF000000")
         buildConfigField("int", "MODDED_APP_ICON_ALPHA", "0xFFFBB33C")
