@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.8.0...v1.9.0) (2026-10-29)
+
+
+### Features
+
+* the Manager, redone in Deltarune's style ([a7e97b4](https://github.com/Narehatechi/deltacord-manager/commit/a7e97b4a9ffcc966ad93064403e4c21749990540))
+
 # [1.8.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.7.0...v1.8.0) (2026-10-28)
 
 
