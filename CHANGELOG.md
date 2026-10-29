@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.9.0...v1.10.0) (2026-10-29)
+
+
+### Features
+
+* REPORT: Deltacord's full report, even when it's stuck ([38a7455](https://github.com/Narehatechi/deltacord-manager/commit/38a7455d561a3e50c28c1172303aae52c5169c9b))
+
 # [1.9.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.8.0...v1.9.0) (2026-10-29)
 
 
