@@ -10,6 +10,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -48,6 +49,9 @@ data class LinkTheme(val id: String, val name: String, val on: Boolean)
 @Serializable
 data class LinkBackups(val newest: Long? = null, val count: Int = 0)
 
+/** A report from the module, and when it arrived. */
+data class SavedReport(val text: String, val at: Long)
+
 /** A request to Deltacord. */
 @Serializable
 data class LinkRequest(val id: String, val action: String, val target: String? = null, val value: Boolean? = null)
@@ -68,6 +72,32 @@ class DeltacordLink(
     private val _status = MutableStateFlow(load())
     val status: StateFlow<LinkStatus?> = _status.asStateFlow()
     private val waiting = ConcurrentHashMap<String, CompletableDeferred<LinkStatus>>()
+
+    private val reportFile = context.filesDir.resolve("deltacord-report.txt")
+    private val _report = MutableStateFlow<SavedReport?>(
+        reportFile.takeIf { it.exists() }?.let { SavedReport(it.readText(), it.lastModified()) }
+    )
+    /** The newest report from the Deltacord module (works even when Deltacord is stuck). */
+    val report: StateFlow<SavedReport?> = _report.asStateFlow()
+
+    /** A report from the module (from [LinkReceiver]). */
+    fun onReport(text: String) {
+        val saved = SavedReport(text, System.currentTimeMillis())
+        _report.value = saved
+        runCatching { reportFile.writeText(text) }
+    }
+
+    /**
+     * Asks the module for a report and waits for it (null: no answer, usually because Deltacord
+     * isn't running; then [open] with "report" gets one once it has started).
+     */
+    suspend fun requestReport(timeoutMs: Long = 8000): SavedReport? {
+        val before = _report.value?.at ?: 0
+        request("report", timeoutMs = 1)
+        return withTimeoutOrNull(timeoutMs) {
+            report.first { it != null && it.at > before }
+        }
+    }
 
     private fun load(): LinkStatus? = runCatching { json.decodeFromString<LinkStatus>(file.readText()) }.getOrNull()
 
@@ -129,6 +159,7 @@ class DeltacordLink(
         const val EXTRA_REQUEST = "deltacord.request"
         const val EXTRA_REPLY = "deltacord.reply"
         const val EXTRA_STATUS = "deltacord.status"
+        const val EXTRA_REPORT = "deltacord.report"
     }
 }
 
@@ -138,5 +169,6 @@ class LinkReceiver : BroadcastReceiver(), KoinComponent {
 
     override fun onReceive(context: Context, intent: Intent) {
         intent.getStringExtra(DeltacordLink.EXTRA_STATUS)?.let(link::onStatus)
+        intent.getStringExtra(DeltacordLink.EXTRA_REPORT)?.let(link::onReport)
     }
 }

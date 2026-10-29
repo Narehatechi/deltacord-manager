@@ -131,6 +131,18 @@ class ScreenshotTest {
     }
 
     @Test
+    fun report() = shot("report") {
+        app.deltacord.manager.ui.screen.deltacord.ReportView(
+            app.deltacord.manager.domain.link.SavedReport(
+                "Deltacord report (from the module)\n2026-10-29 08:41:00 -0600\n\n===== Versions =====\nDiscord: 351.11 (351011) · package app.deltacord\nModule: 1.18.0\nAndroid 16 (SDK 36) · samsung SM-S928U\n\n===== This launch =====\nRunning for 52s\nDeltacord b027c7b-main\nDeltacord finished starting: yes · plugins started: yes · Discord's screen ready: no\nLast steps: done: plugin deltacord.typewriter @10759ms > ready @10762ms",
+                System.currentTimeMillis(),
+            ),
+            app.deltacord.manager.ui.screen.deltacord.ReportState.GOT,
+            none, none, none, none,
+        )
+    }
+
+    @Test
     fun deltacordNever() = shot("deltacord-never") {
         DeltacordView(null, LinkState.NEVER, null, none, none, none, { _, _ -> }, {}, none, {})
     }

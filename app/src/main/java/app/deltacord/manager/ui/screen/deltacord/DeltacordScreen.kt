@@ -89,6 +89,7 @@ class DeltacordScreen : Screen {
             state = state,
             busy = busy,
             onBack = { navigator.pop() },
+            onReport = { navigator.push(ReportScreen()) },
             onOpen = { link.open() },
             onRefresh = { send("status", null, null, "check on it") },
             onPlugin = { id, on -> send("plugin", id, on, if (on) "turn that plugin on" else "turn that plugin off") },
@@ -111,6 +112,7 @@ fun DeltacordView(
     onTheme: (String?) -> Unit,
     onBackup: () -> Unit,
     onSafeMode: (Boolean) -> Unit,
+    onReport: () -> Unit = {},
 ) {
     val problems = status?.checks?.filter { it.status == "bad" || it.status == "warn" }.orEmpty()
     val lines = when {
@@ -131,6 +133,7 @@ fun DeltacordView(
         Spacer(Modifier.height(8.dp))
         MenuOption("OPEN DELTACORD", onOpen)
         if (status != null) MenuOption("CHECK AGAIN", onRefresh, enabled = busy == null)
+        MenuOption("REPORT", onReport, sub = "Everything about Deltacord to send when something's wrong, even if it's stuck")
 
         if (status == null) return@DeltaScreen
 
