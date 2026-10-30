@@ -27,6 +27,7 @@ import app.deltacord.manager.ui.delta.Delta
 import app.deltacord.manager.ui.delta.DarkFountain
 import app.deltacord.manager.ui.delta.DeltaDialog
 import app.deltacord.manager.ui.delta.FlashyLogo
+import app.deltacord.manager.ui.delta.LocalFlashy
 import app.deltacord.manager.ui.delta.entrance
 import app.deltacord.manager.ui.delta.DeltaScreen
 import app.deltacord.manager.ui.delta.DeltaType
@@ -246,6 +247,8 @@ fun MainMenu(
         if (installed) MenuOption("OPTIONS", { options = true }, sub = "App info, uninstall", modifier = Modifier.entrance(6))
         MenuOption("ABOUT", onAbout, modifier = Modifier.entrance(7))
         MenuOption("REFRESH", onRefresh, style = DeltaType.body, color = Delta.Gray, modifier = Modifier.entrance(8))
+        // Room to see the scene at the bottom (it's drawn behind the menu).
+        if (LocalFlashy.current) Spacer(Modifier.height(110.dp))
     }
 }
 

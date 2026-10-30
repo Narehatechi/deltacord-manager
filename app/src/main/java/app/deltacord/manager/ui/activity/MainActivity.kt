@@ -18,7 +18,7 @@ import org.koin.android.ext.android.get
 import app.deltacord.manager.utils.DiscordVersion
 import app.deltacord.manager.utils.Intents
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.transitions.FadeTransition
+import app.deltacord.manager.ui.delta.FlashTransition
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DeltaTheme(sounds = { prefs.sounds }, flashy = prefs.flashy) {
                 Navigator(screen) {
-                    FadeTransition(it)
+                    FlashTransition(it)
                 }
             }
         }
