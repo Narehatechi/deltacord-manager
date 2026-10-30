@@ -1,0 +1,4 @@
+e: The daemon has terminated unexpectedly on startup attempt #1 with error code: 0. The daemon process output:
+    1. Kotlin compile daemon is ready
+w: file:///home/runner/work/deltacord-manager/deltacord-manager/app/src/main/java/app/deltacord/manager/ui/screen/about/AboutScreen.kt:57:40 'fun <reified T> get(qualifier: Qualifier? = ..., scope: Scope = ..., noinline parameters: (() -> ParametersHolder)? = ...): T' is deprecated. use koinInject() instead.
+w: file:///home/runner/work/deltacord-manager/deltacord-manager/app/src/main/java/app/deltacord/manager/ui/screen/deltacord/DeltacordScreen.kt:49:35 'fun <reified T> get(qualifier: Qualifier? = ..., scope: Scope = ..., noinline parameters: (() -> ParametersHolder)? = ...): T' is deprecated. use koinInject() instead.
