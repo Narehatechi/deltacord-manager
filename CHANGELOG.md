@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.11.0...v1.11.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* the Manager notices its own updates while it's open ([6e3f11a](https://github.com/Narehatechi/deltacord-manager/commit/6e3f11ab777727e002450c879cff2a8cce42cbbb))
+
 # [1.11.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.10.0...v1.11.0) (2026-10-30)
 
 
