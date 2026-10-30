@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -183,8 +185,8 @@ fun DarkFountain(modifier: Modifier = Modifier) {
         // Three little SOULs circling the column (behind it on the far side).
         for (k in 0 until 3) {
             val ang = t * 1.1f + k * (2 * PI.toFloat() / 3)
-            val ox = cx + cos(ang) * size.width * 0.34f
-            val oy = size.height * 0.62f + sin(ang) * size.height * 0.12f
+            val ox = cx + cos(ang) * size.width * 0.28f
+            val oy = size.height * 0.9f + sin(ang) * size.height * 0.07f
             val depth = (sin(ang) + 1) / 2
             pixelArt(HEART_ART, Offset(ox, oy), (1.6f + 1.4f * depth).dp.toPx(), mapOf('X' to Delta.Red.copy(alpha = 0.45f + 0.55f * depth)))
         }
@@ -304,7 +306,7 @@ fun MascotScene(modifier: Modifier = Modifier) {
         val x = 40.dp.toPx() + span * along
         val hop = abs(sin(t * 5f)) * 10.dp.toPx()
         val frame = if (sin(t * 5f) > 0) 0 else 1
-        val p = 3.5.dp.toPx()
+        val p = 4.5.dp.toPx()
         val center = Offset(x, ground - MASCOT[0].size * p / 2 - hop)
         // Its lantern lights the ground.
         drawCircle(Brush.radialGradient(listOf(Color(0xFFFFF0A0).copy(alpha = 0.35f), Color.Transparent), center = Offset(x, ground), radius = 60.dp.toPx()), 60.dp.toPx(), Offset(x, ground))
@@ -408,6 +410,10 @@ fun FlashyBackdrop(strong: Boolean = false, content: @Composable BoxScope.() -> 
     Box(Modifier.fillMaxSize()) {
         DarkWorldBackdrop(strong = strong)
         if (LocalFlashy.current) Sparkles(count = if (strong) 28 else 16)
+        // The main menu: the skyline and the mascot along the bottom of the screen.
+        if (strong && LocalFlashy.current) {
+            MascotScene(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(130.dp).navigationBarsPadding())
+        }
         content()
     }
 }
