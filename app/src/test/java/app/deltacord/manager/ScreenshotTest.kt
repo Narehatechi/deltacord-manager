@@ -35,7 +35,12 @@ class ScreenshotTest {
     )
 
     private fun shot(name: String, content: @Composable () -> Unit) =
-        paparazzi.snapshot(name) { DeltaTheme(still = true) { content() } }
+        paparazzi.snapshot(name) {
+            DeltaTheme(still = true) {
+                // A moment a couple of seconds in, so the effects show mid-motion.
+                androidx.compose.runtime.CompositionLocalProvider(app.deltacord.manager.ui.delta.LocalEffectTime provides 2.6f) { content() }
+            }
+        }
 
     private val none = {}
 
