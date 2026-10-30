@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.10.0...v1.11.0) (2026-10-30)
+
+
+### Features
+
+* a flashy Manager, like the game's site ([bbef650](https://github.com/Narehatechi/deltacord-manager/commit/bbef65084a8b062ad403ba4592181baadbb41957))
+
 # [1.10.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.9.0...v1.10.0) (2026-10-29)
 
 
