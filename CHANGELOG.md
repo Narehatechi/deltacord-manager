@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.11.1...v1.12.0) (2026-10-30)
+
+
+### Features
+
+* a much flashier Manager ([2d7f35c](https://github.com/Narehatechi/deltacord-manager/commit/2d7f35c316e0db9946132694ec606dc9e234bae3))
+
 ## [1.11.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.11.0...v1.11.1) (2026-10-30)
 
 
