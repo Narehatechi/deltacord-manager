@@ -118,7 +118,8 @@ class HomeViewModel(
         }
     }
 
-    private fun checkForUpdate() {
+    /** Checks GitHub for a newer Manager (and module). Run on start, when the app comes back, and on REFRESH. */
+    fun checkForUpdate() {
         screenModelScope.launch {
             release = repo.getLatestRelease("Narehatechi/deltacord-manager").dataOrNull
             release?.let {

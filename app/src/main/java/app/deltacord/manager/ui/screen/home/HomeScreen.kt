@@ -115,6 +115,22 @@ class HomeScreen(private val autoInstall: Boolean = false) : Screen {
 
         BatteryOptimizationDialog()
 
+        // Check for a newer Manager whenever it comes back on screen: Android keeps the app in
+        // memory, so checking only on start missed releases that came out while it was open.
+        @Suppress("DEPRECATION")
+        val lifecycle = androidx.compose.ui.platform.LocalLifecycleOwner.current.lifecycle
+        androidx.compose.runtime.DisposableEffect(lifecycle) {
+            var first = true
+            val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+                if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                    if (!first) viewModel.checkForUpdate()
+                    first = false
+                }
+            }
+            lifecycle.addObserver(observer)
+            onDispose { lifecycle.removeObserver(observer) }
+        }
+
         MainMenu(
             state = state,
             onInstall = { latest?.let { navigator.push(InstallerScreen(it)) } },
@@ -125,7 +141,7 @@ class HomeScreen(private val autoInstall: Boolean = false) : Screen {
             onChanges = { navigator.push(ChangesScreen()) },
             onConfig = { navigator.push(SettingsScreen()) },
             onAbout = { navigator.push(AboutScreen()) },
-            onRefresh = { viewModel.getDiscordVersions(); viewModel.refreshCommits() },
+            onRefresh = { viewModel.getDiscordVersions(); viewModel.refreshCommits(); viewModel.checkForUpdate() },
             onUpdateManager = { viewModel.downloadAndInstallUpdate { progress = it } },
         )
     }
