@@ -99,7 +99,7 @@ private object Sounds {
  * play right now (they never play in previews).
  */
 @Composable
-fun DeltaTheme(sounds: () -> Boolean = { true }, still: Boolean = false, content: @Composable () -> Unit) {
+fun DeltaTheme(sounds: () -> Boolean = { true }, still: Boolean = false, flashy: Boolean = true, content: @Composable () -> Unit) {
     val quiet = still || LocalInspectionMode.current
     val context = LocalContext.current
     val blipper = if (quiet) Blipper { } else {
@@ -107,6 +107,6 @@ fun DeltaTheme(sounds: () -> Boolean = { true }, still: Boolean = false, content
         Blipper { if (sounds()) runCatching { Sounds.play(it) } }
     }
     MaterialTheme(colorScheme = DeltaruneColors, typography = Typography) {
-        CompositionLocalProvider(LocalBlip provides blipper, LocalStill provides quiet, content = content)
+        CompositionLocalProvider(LocalBlip provides blipper, LocalStill provides quiet, LocalFlashy provides flashy, content = content)
     }
 }

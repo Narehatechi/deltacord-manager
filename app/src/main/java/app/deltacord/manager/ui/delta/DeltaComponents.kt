@@ -42,6 +42,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
@@ -154,10 +155,18 @@ fun MenuOption(
             .padding(vertical = 8.dp),
     ) {
         Box(Modifier.width(HEART_SLOT), contentAlignment = Alignment.CenterStart) {
-            if (lit) SoulHeart(pixel = 2.dp)
+            if (lit) {
+                val y = bob()
+                SoulHeart(pixel = 2.dp, modifier = Modifier.graphicsLayer { translationY = y })
+            }
         }
         Column(Modifier.weight(1f)) {
-            Text(text, style = style.copy(color = textColor), maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(
+                text,
+                style = style.copy(color = textColor, shadow = if (lit && LocalFlashy.current) selectedGlow(Delta.Yellow) else null),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
             if (sub != null) Text(sub, style = DeltaType.small, modifier = Modifier.padding(top = 2.dp))
         }
         if (trailing != null) {
@@ -381,12 +390,13 @@ fun DeltaScreen(
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,
     scroll: Boolean = true,
+    /** The main menu's brighter dark world. */
+    strong: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
-) {
+) = FlashyBackdrop(strong = strong) {
     Column(
         modifier
             .fillMaxSize()
-            .background(Delta.Black)
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {

@@ -67,6 +67,9 @@ class PreferenceManager(context: Context) :
     /** Text blips and menu sounds. */
     var sounds by booleanPreference("sounds", true)
 
+    /** The moving backdrops, sparkles, fountain and logo shimmer. */
+    var flashy by booleanPreference("flashy", true)
+
     init {
         if (mirror !in Mirror.entries) {
             mirror = Mirror.DEFAULT

@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            DeltaTheme(sounds = { prefs.sounds }) {
+            DeltaTheme(sounds = { prefs.sounds }, flashy = prefs.flashy) {
                 Navigator(screen) {
                     FadeTransition(it)
                 }

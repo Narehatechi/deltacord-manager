@@ -1,6 +1,7 @@
 package app.deltacord.manager.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +24,10 @@ import androidx.compose.ui.unit.dp
 import app.deltacord.manager.BuildConfig
 import app.deltacord.manager.domain.manager.PreferenceManager
 import app.deltacord.manager.ui.delta.Delta
+import app.deltacord.manager.ui.delta.DarkFountain
 import app.deltacord.manager.ui.delta.DeltaDialog
+import app.deltacord.manager.ui.delta.FlashyLogo
+import app.deltacord.manager.ui.delta.entrance
 import app.deltacord.manager.ui.delta.DeltaScreen
 import app.deltacord.manager.ui.delta.DeltaType
 import app.deltacord.manager.ui.delta.HpBar
@@ -168,23 +172,27 @@ fun MainMenu(
         )
     }
 
-    DeltaScreen(title = null, onBack = null) {
-        Spacer(Modifier.height(36.dp))
-        Text(
-            "DELTACORD",
-            style = DeltaType.logo,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Text(
-            "MANAGER  v${BuildConfig.VERSION_NAME}",
-            style = DeltaType.small.copy(letterSpacing = DeltaType.title.letterSpacing),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-        )
-        Spacer(Modifier.height(28.dp))
+    DeltaScreen(title = null, onBack = null, strong = true) {
+        // The logo over the Dark Fountain, like the game's site.
+        Box(Modifier.fillMaxWidth().height(190.dp), contentAlignment = Alignment.Center) {
+            DarkFountain(Modifier.fillMaxWidth().height(190.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                FlashyLogo("DELTACORD", DeltaType.logo)
+                Text(
+                    "MANAGER  v${BuildConfig.VERSION_NAME}",
+                    style = DeltaType.small.copy(
+                        letterSpacing = DeltaType.title.letterSpacing,
+                        color = Delta.White,
+                        shadow = androidx.compose.ui.graphics.Shadow(Delta.Black, blurRadius = 8f),
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(top = 6.dp).entrance(10),
+                )
+            }
+        }
+        Spacer(Modifier.height(8.dp))
 
-        SaveFile(state)
+        Box(Modifier.entrance(0)) { SaveFile(state) }
 
         if (state.managerUpdate != null) {
             Spacer(Modifier.height(16.dp))
@@ -201,6 +209,7 @@ fun MainMenu(
 
         Spacer(Modifier.height(20.dp))
         MenuOption(
+            modifier = Modifier.entrance(1),
             text = state.action.label,
             onClick = onInstall,
             selected = state.action.enabled,
@@ -214,13 +223,13 @@ fun MainMenu(
                 HomeAction.LOADING -> "Checking Discord's versions..."
             },
         )
-        MenuOption("LAUNCH", onLaunch, enabled = installed)
-        MenuOption("DELTACORD", onDeltacord, enabled = installed, sub = "Health check, plugins, themes, backups")
-        MenuOption("CHANGES", onChanges, sub = "What's new in Deltacord")
-        MenuOption("CONFIG", onConfig)
-        if (installed) MenuOption("OPTIONS", { options = true }, sub = "App info, uninstall")
-        MenuOption("ABOUT", onAbout)
-        MenuOption("REFRESH", onRefresh, style = DeltaType.body, color = Delta.Gray)
+        MenuOption("LAUNCH", onLaunch, enabled = installed, modifier = Modifier.entrance(2))
+        MenuOption("DELTACORD", onDeltacord, enabled = installed, sub = "Health check, plugins, themes, backups, report", modifier = Modifier.entrance(3))
+        MenuOption("CHANGES", onChanges, sub = "What's new in Deltacord", modifier = Modifier.entrance(4))
+        MenuOption("CONFIG", onConfig, modifier = Modifier.entrance(5))
+        if (installed) MenuOption("OPTIONS", { options = true }, sub = "App info, uninstall", modifier = Modifier.entrance(6))
+        MenuOption("ABOUT", onAbout, modifier = Modifier.entrance(7))
+        MenuOption("REFRESH", onRefresh, style = DeltaType.body, color = Delta.Gray, modifier = Modifier.entrance(8))
     }
 }
 

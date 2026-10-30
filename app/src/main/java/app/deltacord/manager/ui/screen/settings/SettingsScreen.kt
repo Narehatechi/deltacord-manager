@@ -83,6 +83,12 @@ class SettingsScreen : Screen {
                 { prefs.sounds = it },
                 sub = "Text blips and menu sounds",
             )
+            ToggleOption(
+                "Flashy effects",
+                prefs.flashy,
+                { prefs.flashy = it },
+                sub = "The moving dark world, sparkles and fountain. Turn off to save battery",
+            )
 
             SectionLabel("Deltacord app")
             var name by remember { mutableStateOf(prefs.appName) }
