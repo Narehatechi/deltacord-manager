@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.12.0...v1.13.0) (2026-11-22)
+
+
+### Bug Fixes
+
+* the Battle Box logo branch is a proper if/else ([432ca08](https://github.com/Narehatechi/deltacord-manager/commit/432ca081ee4b927b0dee31f9f19d73570a8d78e0))
+
+
+### Features
+
+* Battle Box, the Manager's new default look ([1860d20](https://github.com/Narehatechi/deltacord-manager/commit/1860d20563195e6f889d3e09564c34207038351a))
+
 # [1.12.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.11.1...v1.12.0) (2026-10-30)
 
 
