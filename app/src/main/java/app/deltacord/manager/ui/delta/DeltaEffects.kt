@@ -1,5 +1,6 @@
 package app.deltacord.manager.ui.delta
 
+import androidx.compose.foundation.background
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -407,8 +408,9 @@ fun Modifier.entrance(index: Int): Modifier {
 /** A screen's backdrop: the dark world, with sparkles. */
 @Composable
 fun FlashyBackdrop(strong: Boolean = false, content: @Composable BoxScope.() -> Unit) {
-    Box(Modifier.fillMaxSize()) {
-        DarkWorldBackdrop(strong = strong)
+    // Battle Box (not flashy): plain black, like the game's battle screen.
+    Box(Modifier.fillMaxSize().background(Delta.Black)) {
+        if (LocalFlashy.current) DarkWorldBackdrop(strong = strong)
         if (LocalFlashy.current) Sparkles(count = if (strong) 28 else 16)
         // The main menu: the skyline and the mascot along the bottom of the screen.
         if (strong && LocalFlashy.current) {
