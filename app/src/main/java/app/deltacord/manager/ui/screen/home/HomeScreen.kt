@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.deltacord.manager.ui.delta.Dialogue
+import androidx.compose.ui.unit.sp
 import app.deltacord.manager.BuildConfig
 import app.deltacord.manager.domain.manager.PreferenceManager
 import app.deltacord.manager.ui.delta.Delta
@@ -58,7 +60,29 @@ data class HomeState(
     val managerUpdate: String?,
     val updating: Boolean = false,
     val updateProgress: Float? = null,
-)
+    /** The module in the installed Deltacord, if known. */
+    val moduleInstalled: String? = null,
+    /** The newest module, if known. */
+    val moduleLatest: String? = null,
+) {
+    /** A newer module is out than the one in the installed Deltacord. */
+    val moduleUpdate: Boolean
+        get() = installed != null && !moduleInstalled.isNullOrBlank() && !moduleLatest.isNullOrBlank() && moduleInstalled != moduleLatest
+
+    /** What the first option says: reinstalling to get a newer module is an update. */
+    val actionLabel: String
+        get() = if (action == HomeAction.REINSTALL && moduleUpdate) "UPDATE MODULE" else action.label
+
+    val actionSub: String
+        get() = when (action) {
+            HomeAction.INSTALL -> "Download Discord and add Deltacord to it"
+            HomeAction.UPDATE -> "Discord $latest is out"
+            HomeAction.REINSTALL -> if (moduleUpdate) "Module $moduleLatest is out (you have $moduleInstalled)" else "Install the same version again"
+            HomeAction.DOWNGRADE -> "Go back to Discord $latest"
+            HomeAction.NO_DOWNGRADE -> "A newer Discord is installed (CONFIG to allow going back)"
+            HomeAction.LOADING -> "Checking Discord's versions..."
+        }
+}
 
 enum class HomeAction(val label: String, val enabled: Boolean) {
     LOADING("LOADING...", false),
@@ -112,6 +136,8 @@ class HomeScreen(private val autoInstall: Boolean = false) : Screen {
             managerUpdate = viewModel.release?.versionName?.takeIf { viewModel.showUpdateDialog && !BuildConfig.DEBUG },
             updating = viewModel.isUpdating,
             updateProgress = progress,
+            moduleInstalled = prefs.installedModule.ifBlank { null },
+            moduleLatest = prefs.moduleVersion.ifBlank { null },
         )
 
         BatteryOptimizationDialog()
@@ -189,7 +215,20 @@ fun MainMenu(
         )
     }
 
+    val darkWorld = LocalFlashy.current
     DeltaScreen(title = null, onBack = null, strong = true) {
+        if (!darkWorld) {
+            // Battle Box: the plain logo, like the game's battle screen.
+            Spacer(Modifier.height(28.dp))
+            Text("DELTACORD", style = DeltaType.logo.copy(fontSize = 44.sp, letterSpacing = 4.sp), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(
+                "MANAGER · v${BuildConfig.VERSION_NAME}",
+                style = DeltaType.small.copy(letterSpacing = 4.sp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+            )
+            Spacer(Modifier.height(22.dp))
+        } else
         // The logo over the Dark Fountain, like the game's site.
         Box(Modifier.fillMaxWidth().height(190.dp), contentAlignment = Alignment.Center) {
             DarkFountain(Modifier.fillMaxWidth().height(190.dp))
@@ -227,18 +266,11 @@ fun MainMenu(
         Spacer(Modifier.height(20.dp))
         MenuOption(
             modifier = Modifier.entrance(1),
-            text = state.action.label,
+            text = state.actionLabel,
             onClick = onInstall,
             selected = state.action.enabled,
             enabled = state.action.enabled,
-            sub = when (state.action) {
-                HomeAction.INSTALL -> "Download Discord and add Deltacord to it"
-                HomeAction.UPDATE -> "Discord ${state.latest} is out"
-                HomeAction.REINSTALL -> "Install the same version again"
-                HomeAction.DOWNGRADE -> "Go back to Discord ${state.latest}"
-                HomeAction.NO_DOWNGRADE -> "A newer Discord is installed (CONFIG to allow going back)"
-                HomeAction.LOADING -> "Checking Discord's versions..."
-            },
+            sub = state.actionSub,
         )
         MenuOption("LAUNCH", onLaunch, enabled = installed, modifier = Modifier.entrance(2))
         MenuOption("DELTACORD", onDeltacord, enabled = installed, sub = "Health check, plugins, themes, backups, report", modifier = Modifier.entrance(3))
@@ -247,37 +279,64 @@ fun MainMenu(
         if (installed) MenuOption("OPTIONS", { options = true }, sub = "App info, uninstall", modifier = Modifier.entrance(6))
         MenuOption("ABOUT", onAbout, modifier = Modifier.entrance(7))
         MenuOption("REFRESH", onRefresh, style = DeltaType.body, color = Delta.Gray, modifier = Modifier.entrance(8))
+        if (!darkWorld) {
+            // The battle box at the bottom says what's going on, like the game's dialogue.
+            Spacer(Modifier.height(18.dp))
+            Dialogue(
+                when {
+                    state.installed == null -> listOf("Deltacord isn't installed yet.", "INSTALL puts it on your phone.")
+                    state.moduleUpdate -> listOf("A new module is ready (${state.moduleLatest}).", "UPDATE MODULE adds it. Your settings stay.")
+                    state.action == HomeAction.UPDATE -> listOf("Discord ${state.latest} is out.", "UPDATE brings Deltacord along.")
+                    else -> listOf("Deltacord is ready.", "It fills you with determination.")
+                }
+            )
+        }
         // Room to see the scene at the bottom (it's drawn behind the menu).
-        if (LocalFlashy.current) Spacer(Modifier.height(110.dp))
+        if (darkWorld) Spacer(Modifier.height(110.dp))
     }
 }
 
-/** The "save file": which Discord is installed and what's newest, like the game's file select. */
+/** The "save file": which Discord and module are installed and what's newest, like the game's file select. */
 @Composable
 private fun SaveFile(state: HomeState) {
-    PixelBox {
+    PixelBox(borderColor = if (state.moduleUpdate || state.action == HomeAction.UPDATE) Delta.Yellow else Delta.White) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SoulHeart(pixel = 3.dp)
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text(state.appName.uppercase(), style = DeltaType.title)
-                Text(
-                    when {
-                        state.installed == null -> "Not installed yet"
-                        state.latest == null -> "Discord ${state.installed}"
-                        state.installed == state.latest -> "Discord ${state.installed} · up to date"
-                        else -> "Discord ${state.installed}"
-                    },
-                    style = DeltaType.body.copy(color = if (state.installed == null) Delta.Gray else Delta.White),
-                )
-            }
+            SoulHeart(pixel = 2.dp)
+            Spacer(Modifier.width(10.dp))
+            Text("FILE 1 · ${state.appName.uppercase()}", style = DeltaType.small, modifier = Modifier.weight(1f))
         }
-        if (state.latest != null && state.installed != state.latest) {
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Text(if (state.targetPinned) "TARGET" else "NEWEST", style = DeltaType.small)
-                Text("Discord ${state.latest}", style = DeltaType.small.copy(color = Delta.Yellow))
-            }
+        Spacer(Modifier.height(10.dp))
+        FileRow(
+            "Discord",
+            state.installed?.substringBefore(" -") ?: "not installed",
+            when {
+                state.installed == null || state.latest == null -> null
+                state.installed == state.latest -> "up to date"
+                else -> "${if (state.targetPinned) "target" else "new"}: ${state.latest.substringBefore(" -")}"
+            },
+            highlight = state.installed != null && state.latest != null && state.installed != state.latest,
+        )
+        if (state.installed != null) {
+            FileRow(
+                "Module",
+                state.moduleInstalled ?: "?",
+                when {
+                    state.moduleUpdate -> "new: ${state.moduleLatest}"
+                    state.moduleInstalled != null && state.moduleInstalled == state.moduleLatest -> "up to date"
+                    state.moduleInstalled == null && state.moduleLatest != null -> "newest: ${state.moduleLatest}"
+                    else -> null
+                },
+                highlight = state.moduleUpdate,
+            )
         }
+    }
+}
+
+@Composable
+private fun FileRow(label: String, value: String, note: String?, highlight: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
+        Text(label, style = DeltaType.body, modifier = Modifier.width(96.dp))
+        Text(value, style = DeltaType.body, modifier = Modifier.weight(1f))
+        if (note != null) Text(note, style = DeltaType.small.copy(color = if (highlight) Delta.Yellow else Delta.Gray), textAlign = TextAlign.End)
     }
 }

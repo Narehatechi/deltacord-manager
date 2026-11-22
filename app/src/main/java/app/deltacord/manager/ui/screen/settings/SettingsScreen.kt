@@ -83,11 +83,13 @@ class SettingsScreen : Screen {
                 { prefs.sounds = it },
                 sub = "Text blips and menu sounds",
             )
-            ToggleOption(
-                "Flashy effects",
-                prefs.flashy,
-                { prefs.flashy = it },
-                sub = "The moving dark world, sparkles and fountain. Turn off to save battery",
+            CycleOption(
+                "Look",
+                prefs.look,
+                app.deltacord.manager.domain.manager.ManagerLook.entries,
+                { it.label },
+                { prefs.look = it },
+                sub = "Battle Box: plain and fast. Dark World: moving backdrops and sparkles (uses more battery)",
             )
 
             SectionLabel("Deltacord app")

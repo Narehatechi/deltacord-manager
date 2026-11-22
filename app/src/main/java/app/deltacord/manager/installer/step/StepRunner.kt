@@ -179,6 +179,8 @@ class StepRunner(
         }
 
         completed = true
+        // Remember which module went into this install, so the main menu knows when a newer one is out.
+        if (preferenceManager.moduleVersion.isNotBlank()) preferenceManager.installedModule = preferenceManager.moduleVersion
         return null
     }
 
