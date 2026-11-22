@@ -18,6 +18,8 @@ object Intents {
 
     object Actions {
         const val INSTALL = "${BuildConfig.APPLICATION_ID}.intents.actions.INSTALL"
+        /** From Deltacord in Discord: "a new module is out, update it". */
+        const val UPDATE_MODULE = "app.deltacord.actions.UPDATE_MODULE"
     }
 
     object Extras {

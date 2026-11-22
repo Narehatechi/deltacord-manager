@@ -57,6 +57,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
+                <!-- Deltacord's "Update now" (a new module is out). -->
+                <action android:name="app.deltacord.actions.UPDATE_MODULE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
                 <action android:name="app.deltacord.actions.INSTALL"/>
                 <category android:name="android.intent.category.OPENABLE"/>
             </intent-filter>

@@ -20,6 +20,9 @@ class InstallManager(
 
     var current by mutableStateOf<PackageInfo?>(null)
 
+    /** The module inside the installed Deltacord (its release number, like 1941), read from the app itself. */
+    var moduleVersion by mutableStateOf<String?>(null)
+
     init {
         getInstalled()
     }
@@ -46,6 +49,33 @@ class InstallManager(
         } catch (e: PackageManager.NameNotFoundException) {
             null
         }
+        readModuleVersion()
+    }
+
+    /**
+     * The installed Deltacord carries the module inside it (LSPatch keeps it in
+     * assets/lspatch/modules/). Reading its version from there means the Manager always knows
+     * which module you have, even for installs made before it started keeping track.
+     */
+    private fun readModuleVersion() {
+        val app = current?.applicationInfo ?: run { moduleVersion = null; return }
+        Thread {
+            moduleVersion = try {
+                java.util.zip.ZipFile(app.sourceDir).use { zip ->
+                    val entry = zip.entries().asSequence().firstOrNull {
+                        it.name.startsWith("assets/lspatch/modules/") && it.name.endsWith(".apk") && "deltacord" in it.name
+                    } ?: return@use null
+                    val copy = java.io.File(context.cacheDir, "installed-module.apk")
+                    zip.getInputStream(entry).use { input -> copy.outputStream().use { input.copyTo(it) } }
+                    @Suppress("DEPRECATION")
+                    val info = context.packageManager.getPackageArchiveInfo(copy.absolutePath, 0)
+                    copy.delete()
+                    info?.let { if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode.toString() else @Suppress("DEPRECATION") it.versionCode.toString() }
+                }
+            } catch (e: Throwable) {
+                null
+            }
+        }.start()
     }
 
     fun uninstall() {
