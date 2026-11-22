@@ -228,22 +228,23 @@ fun MainMenu(
                 modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
             )
             Spacer(Modifier.height(22.dp))
-        } else
-        // The logo over the Dark Fountain, like the game's site.
-        Box(Modifier.fillMaxWidth().height(190.dp), contentAlignment = Alignment.Center) {
-            DarkFountain(Modifier.fillMaxWidth().height(190.dp))
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                FlashyLogo("DELTACORD", DeltaType.logo)
-                Text(
-                    "MANAGER  v${BuildConfig.VERSION_NAME}",
-                    style = DeltaType.small.copy(
-                        letterSpacing = DeltaType.title.letterSpacing,
-                        color = Delta.White,
-                        shadow = androidx.compose.ui.graphics.Shadow(Delta.Black, blurRadius = 8f),
-                    ),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth().padding(top = 6.dp).entrance(10),
-                )
+        } else {
+            // The logo over the Dark Fountain, like the game's site.
+            Box(Modifier.fillMaxWidth().height(190.dp), contentAlignment = Alignment.Center) {
+                DarkFountain(Modifier.fillMaxWidth().height(190.dp))
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    FlashyLogo("DELTACORD", DeltaType.logo)
+                    Text(
+                        "MANAGER  v${BuildConfig.VERSION_NAME}",
+                        style = DeltaType.small.copy(
+                            letterSpacing = DeltaType.title.letterSpacing,
+                            color = Delta.White,
+                            shadow = androidx.compose.ui.graphics.Shadow(Delta.Black, blurRadius = 8f),
+                        ),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(top = 6.dp).entrance(10),
+                    )
+                }
             }
         }
         Spacer(Modifier.height(8.dp))
