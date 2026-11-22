@@ -34,9 +34,9 @@ class ScreenshotTest {
         maxPercentDifference = 0.1,
     )
 
-    private fun shot(name: String, content: @Composable () -> Unit) =
+    private fun shot(name: String, flashy: Boolean = true, content: @Composable () -> Unit) =
         paparazzi.snapshot(name) {
-            DeltaTheme(still = true) {
+            DeltaTheme(still = true, flashy = flashy) {
                 // A moment a couple of seconds in, so the effects show mid-motion.
                 androidx.compose.runtime.CompositionLocalProvider(app.deltacord.manager.ui.delta.LocalEffectTime provides 2.6f) { content() }
             }
@@ -50,6 +50,21 @@ class ScreenshotTest {
     @Test
     fun mainMenuUpdate() = shot("menu-update") {
         menu(HomeState("Deltacord", "351.11 - Stable", "352.4 - Stable", false, HomeAction.UPDATE, managerUpdate = null))
+    }
+
+    @Test
+    fun battleBoxModuleUpdate() = shot("battlebox-module-update", flashy = false) {
+        menu(HomeState("Deltacord", "354.12 - Stable", "354.12 - Stable", false, HomeAction.REINSTALL, managerUpdate = null, moduleInstalled = "1938", moduleLatest = "1939"))
+    }
+
+    @Test
+    fun battleBoxReady() = shot("battlebox-ready", flashy = false) {
+        menu(HomeState("Deltacord", "354.12 - Stable", "354.12 - Stable", false, HomeAction.REINSTALL, managerUpdate = null, moduleInstalled = "1939", moduleLatest = "1939"))
+    }
+
+    @Test
+    fun battleBoxFresh() = shot("battlebox-fresh", flashy = false) {
+        menu(HomeState("Deltacord", null, "354.12 - Stable", false, HomeAction.INSTALL, managerUpdate = "v1.13.0"))
     }
 
     @Test

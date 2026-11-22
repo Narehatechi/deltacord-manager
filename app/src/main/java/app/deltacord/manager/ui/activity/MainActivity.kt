@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            DeltaTheme(sounds = { prefs.sounds }, flashy = prefs.flashy) {
+            DeltaTheme(sounds = { prefs.sounds }, flashy = prefs.look == app.deltacord.manager.domain.manager.ManagerLook.DARK_WORLD) {
                 Navigator(screen) {
                     FlashTransition(it)
                 }

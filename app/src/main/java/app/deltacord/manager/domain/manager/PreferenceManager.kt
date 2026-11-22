@@ -67,14 +67,28 @@ class PreferenceManager(context: Context) :
     /** Text blips and menu sounds. */
     var sounds by booleanPreference("sounds", true)
 
-    /** The moving backdrops, sparkles, fountain and logo shimmer. */
+    /** The moving backdrops, sparkles, fountain and logo shimmer (replaced by [look]). */
     var flashy by booleanPreference("flashy", true)
+
+    /** How the Manager looks: plain battle boxes, or the moving dark world. */
+    var look by enumPreference("look", ManagerLook.BATTLE_BOX)
+
+    /** The module version in the installed Deltacord (saved when an install finishes). */
+    var installedModule by stringPreference("installed_module", "")
 
     init {
         if (mirror !in Mirror.entries) {
             mirror = Mirror.DEFAULT
         }
     }
+}
+
+enum class ManagerLook(val label: String) {
+    /** Black, thick white boxes and the SOUL: the game's battle screen. */
+    BATTLE_BOX("Battle Box"),
+
+    /** The moving dark world, fountain, sparkles and city. */
+    DARK_WORLD("Dark World"),
 }
 
 enum class Theme(@StringRes val labelRes: Int) {
