@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.14.0...v1.15.0) (2026-11-24)
+
+
+### Features
+
+* Deltacord's heart logo is the default icon ([ab61b60](https://github.com/Narehatechi/deltacord-manager/commit/ab61b6099966b2061d8c4243dfe52472e2a3845a))
+
 # [1.14.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.13.0...v1.14.0) (2026-11-22)
 
 
