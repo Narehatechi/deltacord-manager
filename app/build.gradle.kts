@@ -28,7 +28,7 @@ android {
         buildConfigField("String", "ORG_LINK", "\"https://github.com/Narehatechi\"")
         buildConfigField("String", "INVITE_LINK", "\"https://discord.gg/6zm6yY5RrE\"")
         buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"app.deltacord\"")
-        buildConfigField("int", "MODDED_APP_ICON", "0xFF000000")
+        buildConfigField("int", "MODDED_APP_ICON", "0xFF100C28")
         buildConfigField("int", "MODDED_APP_ICON_ALPHA", "0xFFFBB33C")
         buildConfigField("int", "MODDED_APP_ICON_OTHER", "0xFFD3575E")
 
