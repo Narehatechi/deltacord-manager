@@ -24,8 +24,8 @@ import app.deltacord.manager.utils.DiscordVersion
 import org.koin.core.component.inject
 
 /**
- * Replaces the app icon: the chosen background colour, and in front of it Deltacord's logo,
- * or the user's own picture if they picked one in Customization settings.
+ * Replaces the app icon background with the chosen color and, if the user picked
+ * an image in Customization settings, replaces the foreground (Discord's logo) with it.
  */
 class ReplaceIconStep : Step() {
 
@@ -51,15 +51,10 @@ class ReplaceIconStep : Step() {
         val colorArgb = CustomIcon.parseColor(preferences.iconColor) ?: BuildConfig.MODDED_APP_ICON
         val backgroundColor = arsc.getPackageChunk().addColorResource("brand", Color(colorArgb))
 
-        // Your own picture, or else Deltacord's logo.
         val customIcon = preferences.customIconFile.takeIf { it.exists() }
-        val iconBytes = customIcon?.readBytes()
-            ?: runCatching { context.resources.openRawResource(R.raw.deltacord_icon_foreground).use { it.readBytes() } }
-                .onFailure { runner.logger.e("Couldn't read Deltacord's logo; keeping Discord's", it) }
-                .getOrNull()
         var foregroundIcon: BinaryResourceIdentifier? = null
-        if (iconBytes != null) {
-            runner.logger.i("Adding ${if (customIcon != null) "your picture" else "Deltacord's logo"} as the icon ($CUSTOM_ICON_PATH)")
+        if (customIcon != null) {
+            runner.logger.i("Adding custom icon foreground ($CUSTOM_ICON_PATH)")
             val pathIdx = arsc.getMainArscChunk().stringPool.addString(CUSTOM_ICON_PATH)
             foregroundIcon = arsc.getPackageChunk().addResource(
                 typeName = "mipmap",
@@ -94,7 +89,7 @@ class ReplaceIconStep : Step() {
 
         runner.logger.i("Writing and compiling resources.arsc")
         ZipWriter(baseApk, /* append = */ true).use {
-            if (iconBytes != null) it.writeEntry(CUSTOM_ICON_PATH, iconBytes)
+            if (customIcon != null) it.writeEntry(CUSTOM_ICON_PATH, customIcon.readBytes())
             it.deleteEntry("resources.arsc")
             it.writeEntry("resources.arsc", arsc.toByteArray())
         }
