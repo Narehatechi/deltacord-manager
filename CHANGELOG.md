@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/Narehatechi/deltacord-manager/compare/v1.15.0...v1.15.1) (2026-11-24)
+
+
+### Bug Fixes
+
+* put back the previous icon (revert the heart logo) ([fea1fda](https://github.com/Narehatechi/deltacord-manager/commit/fea1fdab99e5ea6303004fc6a1d859c9fc41c97d))
+
 # [1.15.0](https://github.com/Narehatechi/deltacord-manager/compare/v1.14.0...v1.15.0) (2026-11-24)
 
 
