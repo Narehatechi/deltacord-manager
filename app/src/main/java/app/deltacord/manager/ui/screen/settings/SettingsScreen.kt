@@ -187,20 +187,22 @@ private fun IconOptions(prefs: PreferenceManager) {
             colorText = it
             if (CustomIcon.parseColor(it) != null) prefs.iconColor = it.trim()
         },
-        hint = if (parsedColor == null) "Use a colour like #000000" else "The colour behind the icon",
+        hint = if (parsedColor == null) "Use a colour like #100C28" else "The colour behind the icon",
         error = parsedColor == null,
     )
 
     val hasCustomIcon = remember(iconVersion) { prefs.customIconFile.exists() }
+    // Your picture, or Deltacord's logo when you haven't picked one.
     val preview = remember(iconVersion) {
-        if (hasCustomIcon) BitmapFactory.decodeFile(prefs.customIconFile.path)?.asImageBitmap() else null
+        if (hasCustomIcon) BitmapFactory.decodeFile(prefs.customIconFile.path)?.asImageBitmap()
+        else runCatching { BitmapFactory.decodeResource(ctx.resources, R.raw.deltacord_icon_foreground)?.asImageBitmap() }.getOrNull()
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
         MenuOption(
             if (hasCustomIcon) "CHANGE PICTURE" else "USE MY PICTURE",
             { picker.launch("image/*") },
             style = DeltaType.body,
-            sub = if (hasCustomIcon) "Your picture (applies on the next install)" else "Your own picture as the icon",
+            sub = if (hasCustomIcon) "Your picture (applies on the next install)" else "Deltacord's logo for now. Pick your own picture instead",
             modifier = Modifier.weight(1f),
         )
         if (preview != null) {
@@ -216,7 +218,7 @@ private fun IconOptions(prefs: PreferenceManager) {
         }
     }
     if (hasCustomIcon) {
-        MenuOption("REMOVE PICTURE", { prefs.customIconFile.delete(); iconVersion++ }, style = DeltaType.body)
+        MenuOption("USE DELTACORD'S LOGO", { prefs.customIconFile.delete(); iconVersion++ }, style = DeltaType.body, sub = "Removes your picture")
     }
 }
 
