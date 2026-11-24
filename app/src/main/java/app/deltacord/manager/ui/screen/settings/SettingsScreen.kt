@@ -83,6 +83,12 @@ class SettingsScreen : Screen {
                 { prefs.sounds = it },
                 sub = "Text blips and menu sounds",
             )
+            ToggleOption(
+                "Update the module by itself",
+                prefs.autoUpdateModule,
+                { prefs.autoUpdateModule = it },
+                sub = "When a new module is out, opening the Manager updates it (Android asks you to confirm)",
+            )
             CycleOption(
                 "Look",
                 prefs.look,

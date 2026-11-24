@@ -39,6 +39,8 @@ class MainActivity : ComponentActivity() {
         val screen = when {
             intent.action == Intents.Actions.INSTALL && version != null ->
                 InstallerScreen(DiscordVersion.fromVersionCode(version)!!)
+            // Deltacord's "Update now": straight into updating the module.
+            intent.action == Intents.Actions.UPDATE_MODULE -> HomeScreen(updateModule = true)
             // The first time (and nothing installed yet): the guided setup.
             !prefs.setupDone && get<InstallManager>().current == null -> SetupScreen()
             else -> HomeScreen()

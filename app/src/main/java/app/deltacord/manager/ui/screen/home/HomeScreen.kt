@@ -93,8 +93,11 @@ enum class HomeAction(val label: String, val enabled: Boolean) {
     NO_DOWNGRADE("NEWER INSTALLED", false),
 }
 
-/** [autoInstall]: start installing as soon as Discord's newest version is known (from the setup). */
-class HomeScreen(private val autoInstall: Boolean = false) : Screen {
+/**
+ * [autoInstall]: start installing as soon as Discord's newest version is known (from the setup).
+ * [updateModule]: opened from Deltacord's "Update now", so update the module straight away.
+ */
+class HomeScreen(private val autoInstall: Boolean = false, private val updateModule: Boolean = false) : Screen {
 
     @Composable
     override fun Content() {
@@ -136,9 +139,22 @@ class HomeScreen(private val autoInstall: Boolean = false) : Screen {
             managerUpdate = viewModel.release?.versionName?.takeIf { viewModel.showUpdateDialog && !BuildConfig.DEBUG },
             updating = viewModel.isUpdating,
             updateProgress = progress,
-            moduleInstalled = prefs.installedModule.ifBlank { null },
+            moduleInstalled = viewModel.installManager.moduleVersion ?: prefs.installedModule.ifBlank { null },
             moduleLatest = prefs.moduleVersion.ifBlank { null },
         )
+
+        // A new module is out: update it by itself (CONFIG > Update the module by itself), or
+        // because Deltacord's "Update now" opened the Manager. Once per visit to the menu.
+        var moduleAutoStarted by rememberSaveable { mutableStateOf(false) }
+        LaunchedEffect(state.moduleUpdate, latest, current) {
+            val wanted = updateModule || prefs.autoUpdateModule
+            if (wanted && !moduleAutoStarted && latest != null && current != null && action == HomeAction.REINSTALL &&
+                (state.moduleUpdate || (updateModule && state.moduleInstalled == null))
+            ) {
+                moduleAutoStarted = true
+                navigator.push(InstallerScreen(latest))
+            }
+        }
 
         BatteryOptimizationDialog()
 

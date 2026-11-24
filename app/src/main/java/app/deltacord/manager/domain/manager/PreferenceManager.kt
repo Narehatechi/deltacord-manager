@@ -73,6 +73,9 @@ class PreferenceManager(context: Context) :
     /** How the Manager looks: plain battle boxes, or the moving dark world. */
     var look by enumPreference("look", ManagerLook.BATTLE_BOX)
 
+    /** Update the module by itself when a new one is out (Android still asks to confirm the install). */
+    var autoUpdateModule by booleanPreference("auto_update_module", true)
+
     /** The module version in the installed Deltacord (saved when an install finishes). */
     var installedModule by stringPreference("installed_module", "")
 
